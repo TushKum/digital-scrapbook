@@ -1,13 +1,13 @@
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { AdaptiveDpr, OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import type { TimeKey } from '../data/blocks';
-import { BLOCKS } from '../data/blocks';
+import type { Block, TimeKey } from '../data/blocks';
 import type { Lang, Strings } from '../lib/i18n';
 import MapTerrain from './three/MapTerrain';
 import BlockMarker from './three/BlockMarker';
 
 interface SceneProps {
+  blocks: Block[];
   time: TimeKey;
   lang: Lang;
   str: Strings;
@@ -18,6 +18,7 @@ interface SceneProps {
 }
 
 export default function Scene({
+  blocks,
   time,
   lang,
   str,
@@ -60,7 +61,7 @@ export default function Scene({
 
       <Suspense fallback={null}>
         <MapTerrain />
-        {BLOCKS.map((block) => (
+        {blocks.map((block) => (
           <BlockMarker
             key={block.id}
             block={block}

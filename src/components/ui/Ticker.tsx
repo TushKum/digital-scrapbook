@@ -1,16 +1,16 @@
 import { Megaphone } from 'lucide-react';
-import type { Lang, Strings } from '../../lib/i18n';
-import { DISPATCHES } from '../../lib/i18n';
+import type { Strings } from '../../lib/i18n';
 
 interface Props {
-  lang: Lang;
+  messages: string[];
   str: Strings;
 }
 
 // Public notification ticker — a continuously scrolling marquee of official
-// dispatches. The track is duplicated so the CSS translate loop is seamless.
-export default function Ticker({ lang, str }: Props) {
-  const items = DISPATCHES[lang];
+// dispatches (served by the backend). The track is duplicated so the CSS
+// translate loop is seamless.
+export default function Ticker({ messages, str }: Props) {
+  const items = messages.length > 0 ? messages : ['Awaiting official dispatches from surveillance gateway…'];
 
   return (
     <div className="flex h-9 items-stretch border-b border-saffron/40 bg-saffron-tint">

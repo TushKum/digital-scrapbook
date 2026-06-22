@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Secrets
+.env
+
+# Prisma generated client + backend build output
+server/src/generated
+server/dist

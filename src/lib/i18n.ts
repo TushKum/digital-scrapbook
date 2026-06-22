@@ -139,23 +139,3 @@ export const STRINGS: Record<Lang, Strings> = {
     mapCaption: 'ਬਲਾਕ-ਪੱਧਰੀ ਬਿਮਾਰੀ ਅਤੇ ਪਾਣੀ ਗੁਣਵੱਤਾ ਨਿਗਰਾਨੀ',
   },
 };
-
-// Official dispatches for the public notification ticker.
-export const DISPATCHES: Record<Lang, string[]> = {
-  EN: [
-    'ALERT: High turbidity reported in Sanaur block — boiling-water advisory issued for affected wards.',
-    'UPDATE: ORS stock replenished at Rajpura CHC; buffer restored to 82%.',
-    'ADVISORY: Chlorination drive intensified across Samana sub-centres following coliform detection.',
-    'NOTICE: Rapid Response Team deployed to Patran for door-to-door ADD surveillance.',
-    'INFO: Nabha block water quality within safe limits — routine monitoring continues.',
-    'DIRECTIVE: District Nodal Officer to review Epi-Week 22 IDSP returns by 1800 hrs.',
-  ],
-  PA: [
-    'ਚੇਤਾਵਨੀ: ਸਨੌਰ ਬਲਾਕ ਵਿੱਚ ਉੱਚ ਗੰਦਲਾਪਣ — ਪ੍ਰਭਾਵਿਤ ਵਾਰਡਾਂ ਲਈ ਪਾਣੀ ਉਬਾਲਣ ਦੀ ਸਲਾਹ ਜਾਰੀ।',
-    'ਅਪਡੇਟ: ਰਾਜਪੁਰਾ CHC ਵਿਖੇ ORS ਭੰਡਾਰ ਮੁੜ ਭਰਿਆ ਗਿਆ; ਬਫ਼ਰ 82% ਤੱਕ ਬਹਾਲ।',
-    'ਸਲਾਹ: ਕੋਲੀਫਾਰਮ ਮਿਲਣ ਮਗਰੋਂ ਸਮਾਣਾ ਉਪ-ਕੇਂਦਰਾਂ ਵਿੱਚ ਕਲੋਰੀਨੇਸ਼ਨ ਤੇਜ਼ ਕੀਤੀ ਗਈ।',
-    'ਸੂਚਨਾ: ਪਾਤੜਾਂ ਵਿੱਚ ਘਰ-ਘਰ ADD ਨਿਗਰਾਨੀ ਲਈ ਰੈਪਿਡ ਰਿਸਪਾਂਸ ਟੀਮ ਤਾਇਨਾਤ।',
-    'ਜਾਣਕਾਰੀ: ਨਾਭਾ ਬਲਾਕ ਦਾ ਪਾਣੀ ਸੁਰੱਖਿਅਤ ਹੱਦਾਂ ਅੰਦਰ — ਨਿਯਮਤ ਨਿਗਰਾਨੀ ਜਾਰੀ।',
-    'ਹਦਾਇਤ: ਜ਼ਿਲ੍ਹਾ ਨੋਡਲ ਅਫ਼ਸਰ 1800 ਵਜੇ ਤੱਕ ਮਹਾਂਮਾਰੀ ਹਫ਼ਤਾ 22 ਦੇ IDSP ਅੰਕੜੇ ਜਾਂਚਣ।',
-  ],
-};

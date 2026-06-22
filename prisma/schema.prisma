@@ -1,0 +1,78 @@
+// NEERVANA surveillance database — PostgreSQL via Prisma.
+// Datasource URL + schema/migration paths are configured in prisma.config.ts.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../server/src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// A revenue/administrative block in Patiala district.
+model Block {
+  id         String     @id
+  name       String
+  namePa     String
+  phc        String
+  population Int
+  posX       Float
+  posZ       Float
+  areaW      Float
+  areaD      Float
+  sortOrder  Int        @default(0)
+  snapshots  Snapshot[]
+  stock      Stock[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("blocks")
+}
+
+/// IDSP + water-quality snapshot for a block in a reporting window.
+model Snapshot {
+  id          String   @id @default(cuid())
+  block       Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  blockId     String
+  window      String // '24h' | '7d' | 'epi22'
+  activeCases Int
+  newCases    Int
+  recovered   Int
+  sForms      Int
+  pForms      Int
+  wqi         Int
+  turbidity   Float
+  updatedAt   DateTime @updatedAt
+
+  @@unique([blockId, window])
+  @@map("snapshots")
+}
+
+/// PHC essential-medicine stock (% of buffer) for a block in a window.
+model Stock {
+  id          String   @id @default(cuid())
+  block       Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  blockId     String
+  window      String
+  ors         Int
+  zinc        Int
+  antibiotics Int
+  updatedAt   DateTime @updatedAt
+
+  @@unique([blockId, window])
+  @@map("stock")
+}
+
+/// Official dispatch surfaced by the public notification ticker.
+model Dispatch {
+  id        String   @id @default(cuid())
+  lang      String // 'EN' | 'PA'
+  text      String
+  priority  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([lang, active])
+  @@map("dispatches")
+}
