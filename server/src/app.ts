@@ -1,4 +1,6 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
 import cors from 'cors';
 import { config } from './config';
 import { apiRouter } from './routes';
@@ -16,6 +18,21 @@ export function createApp() {
   app.use(requestLogger);
 
   app.use('/api', apiRouter);
+
+  const frontendDist = path.resolve(process.cwd(), 'dist');
+  if (fs.existsSync(frontendDist)) {
+    app.use(express.static(frontendDist));
+    app.get('*', (req, res, next) => {
+      if (req.method !== 'GET') {
+        return next();
+      }
+      res.sendFile(path.join(frontendDist, 'index.html'), (err) => {
+        if (err) {
+          next(err);
+        }
+      });
+    });
+  }
 
   app.use(notFound);
   app.use(errorHandler);

@@ -10,9 +10,10 @@ import react from '@vitejs/plugin-react'
 // free port (autoPort), and proxies `/api` to the Express backend so the client
 // can use same-origin requests with no CORS in dev.
 const API_PORT = process.env.API_PORT || '8787'
+const VITE_BASE_URL = process.env.VITE_BASE_URL || '/'
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/neervana/' : '/',
+  base: command === 'build' ? VITE_BASE_URL : '/',
   plugins: [react()],
   server: {
     port: process.env.PORT ? Number(process.env.PORT) : 5173,
