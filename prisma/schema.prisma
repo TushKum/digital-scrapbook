@@ -64,6 +64,19 @@ model Stock {
   @@map("stock")
 }
 
+/// A dashboard operator (e.g. District Nodal Officer).
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  displayName  String
+  role         String   @default("officer")
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+
+  @@map("users")
+}
+
 /// Official dispatch surfaced by the public notification ticker.
 model Dispatch {
   id        String   @id @default(cuid())

@@ -16,6 +16,9 @@ export class AppError extends Error {
   static badRequest(message: string, details?: unknown) {
     return new AppError(400, 'bad_request', message, details);
   }
+  static unauthorized(message = 'Authentication required', details?: unknown) {
+    return new AppError(401, 'unauthorized', message, details);
+  }
   static notFound(message: string, details?: unknown) {
     return new AppError(404, 'not_found', message, details);
   }

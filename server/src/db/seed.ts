@@ -2,6 +2,9 @@ import { prisma } from './prisma';
 import { SEED_BLOCKS, SEED_DISPATCHES } from '../domain/seedData';
 import { TIME_KEYS } from '../types';
 import { logger } from '../logger';
+import { config } from '../config';
+import { authService } from '../services/authService';
+import { userRepository } from '../repositories/userRepository';
 
 // Idempotent seed: upserts blocks/snapshots/stock by natural keys and resets the
 // dispatch feed. Safe to run repeatedly.
@@ -54,13 +57,22 @@ async function main() {
   await prisma.dispatch.deleteMany({});
   await prisma.dispatch.createMany({ data: SEED_DISPATCHES });
 
-  const [blocks, snapshots, stock, dispatches] = await Promise.all([
+  // Seed the default operator (idempotent; password is bcrypt-hashed).
+  await userRepository.upsert({
+    username: config.seedOfficerUser,
+    passwordHash: await authService.hashPassword(config.seedOfficerPassword),
+    displayName: config.seedOfficerName,
+    role: 'nodal_officer',
+  });
+
+  const [blocks, snapshots, stock, dispatches, users] = await Promise.all([
     prisma.block.count(),
     prisma.snapshot.count(),
     prisma.stock.count(),
     prisma.dispatch.count(),
+    prisma.user.count(),
   ]);
-  logger.info({ blocks, snapshots, stock, dispatches }, 'seed complete');
+  logger.info({ blocks, snapshots, stock, dispatches, users }, 'seed complete');
 }
 
 main()

@@ -40,6 +40,11 @@ export const updateStockSchema = z
     message: 'Provide at least one of: ors, zinc, antibiotics',
   });
 
+export const loginSchema = z.object({
+  username: z.string().trim().min(1, 'Username is required').max(64),
+  password: z.string().min(1, 'Password is required').max(200),
+});
+
 export const addDispatchSchema = z.object({
   lang: langSchema,
   text: z.string().trim().min(4).max(280),
@@ -49,3 +54,4 @@ export const addDispatchSchema = z.object({
 export type SubmitReportInput = z.infer<typeof submitReportSchema>;
 export type UpdateStockInput = z.infer<typeof updateStockSchema>;
 export type AddDispatchInput = z.infer<typeof addDispatchSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;

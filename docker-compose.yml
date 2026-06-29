@@ -17,23 +17,5 @@ services:
       timeout: 5s
       retries: 12
 
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        VITE_BASE_URL: /
-    ports:
-      - '8787:8787'
-    environment:
-      DATABASE_URL: postgresql://neervana:neervana@db:5432/neervana?schema=public
-      API_PORT: '8787'
-      NODE_ENV: production
-      CORS_ORIGIN: '*'
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: unless-stopped
-
 volumes:
   neervana-pgdata:

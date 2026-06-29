@@ -9,6 +9,15 @@ export interface Strings {
   portalTitle: string;
   portalSub: string;
   login: string;
+  loginTitle: string;
+  loginPrompt: string;
+  loginErrorEmpty: string;
+  username: string;
+  usernamePlaceholder: string;
+  password: string;
+  passwordPlaceholder: string;
+  loginButton: string;
+  loginHint: string;
   textSize: string;
   language: string;
   highContrast: string;
@@ -55,6 +64,15 @@ export const STRINGS: Record<Lang, Strings> = {
     portalTitle: 'NEERVANA',
     portalSub: 'Integrated Epidemiological Surveillance System',
     login: 'Login: District Nodal Officer',
+    loginTitle: 'Officer Login',
+    loginPrompt: 'Enter your credentials to access the surveillance dashboard.',
+    loginErrorEmpty: 'Username and password are required.',
+    username: 'Username',
+    usernamePlaceholder: 'Enter officer ID',
+    password: 'Password',
+    passwordPlaceholder: 'Enter password',
+    loginButton: 'Sign In',
+    loginHint: 'This is a demo login. Any non-empty credentials will work.',
     textSize: 'Text Size',
     language: 'Language',
     highContrast: 'High Contrast',
@@ -99,6 +117,15 @@ export const STRINGS: Record<Lang, Strings> = {
     portalTitle: 'ਨੀਰਵਾਨਾ',
     portalSub: 'ਏਕੀਕ੍ਰਿਤ ਮਹਾਂਮਾਰੀ ਨਿਗਰਾਨੀ ਪ੍ਰਣਾਲੀ',
     login: 'ਲੌਗਇਨ: ਜ਼ਿਲ੍ਹਾ ਨੋਡਲ ਅਫ਼ਸਰ',
+    loginTitle: 'ਅਧਿਕਾਰੀ ਲੌਗਇਨ',
+    loginPrompt: 'ਸਰਵੇਲੈਂਸ ਡੈਸ਼ਬੋਰਡ ਤੱਕ ਪਹੁੰਚ ਲਈ ਆਪਣੀਆਂ ਪ੍ਰਮਾਣਿਕਤਾ ਦਾਖਲ ਕਰੋ।',
+    loginErrorEmpty: 'ਯੂਜ਼ਰ ਨੇਮ ਅਤੇ ਪਾਸਵਰਡ ਲਾਜ਼ਮੀ ਹਨ।',
+    username: 'ਯੂਜ਼ਰ ਨੇਮ',
+    usernamePlaceholder: 'ਅਧਿਕਾਰੀ ID ਦਾਖਲ ਕਰੋ',
+    password: 'ਪਾਸਵਰਡ',
+    passwordPlaceholder: 'ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ',
+    loginButton: 'ਸਾਇਨ ਇਨ',
+    loginHint: 'ਇਹ ਡੈਮੋ ਲੌਗਇਨ ਹੈ। ਕੋਈ ਵੀ ਖਾਲੀ ਨਹੀਂ ਹੋਣ ਵਾਲੀ ਜਾਣਕਾਰੀ ਕੰਮ ਕਰੇਗੀ।',
     textSize: 'ਟੈਕਸਟ ਆਕਾਰ',
     language: 'ਭਾਸ਼ਾ',
     highContrast: 'ਉੱਚ ਕੰਟ੍ਰਾਸਟ',

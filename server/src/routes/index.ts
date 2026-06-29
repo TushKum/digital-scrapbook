@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { authRoutes } from './authRoutes';
 import { blockRoutes } from './blockRoutes';
 import { dispatchRoutes } from './dispatchRoutes';
 import { healthController } from '../controllers/healthController';
@@ -18,5 +19,6 @@ apiRouter.get(
   asyncHandler(blockController.aggregate),
 );
 
+apiRouter.use('/auth', authRoutes);
 apiRouter.use('/blocks', blockRoutes);
 apiRouter.use('/dispatches', dispatchRoutes);
