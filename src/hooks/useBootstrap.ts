@@ -15,8 +15,8 @@ interface BootState {
 const EMPTY_DISPATCHES: Record<Lang, string[]> = { EN: [], PA: [] };
 
 // Loads the surveillance dataset from the backend with loading/error states and
-// a manual `reload()` for retry.
-export function useBootstrap() {
+// a manual `reload()` for retry. Only fetches once `enabled` (i.e. authenticated).
+export function useBootstrap(enabled: boolean) {
   const [state, setState] = useState<BootState>({
     status: 'loading',
     blocks: [],
@@ -47,10 +47,11 @@ export function useBootstrap() {
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     const controller = new AbortController();
     load(controller.signal);
     return () => controller.abort();
-  }, [load]);
+  }, [enabled, load]);
 
   return { ...state, reload: () => load() };
 }

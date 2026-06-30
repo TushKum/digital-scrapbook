@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Landmark, LogIn, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Landmark, LogOut, RefreshCw, ShieldCheck, UserCircle2 } from 'lucide-react';
 import type { Strings } from '../../lib/i18n';
+import type { AuthUser } from '../../lib/api';
 
 interface Props {
   str: Strings;
+  user: AuthUser | null;
+  onSignOut: () => void;
 }
 
 function useClock() {
@@ -17,7 +20,7 @@ function useClock() {
 
 // Primary masthead: state emblem placeholder + portal identity on the left,
 // sync status and the nodal-officer login on the right.
-export default function Header({ str }: Props) {
+export default function Header({ str, user, onSignOut }: Props) {
   const now = useClock();
   const timeStr = now.toLocaleTimeString('en-IN', { hour12: false });
   const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -56,10 +59,19 @@ export default function Header({ str }: Props) {
             {str.lastUpdated} · {dateStr}
           </div>
         </div>
-        <button className="gov-focus flex items-center gap-2 rounded-md bg-navy px-3.5 py-2 text-[12px] font-semibold text-white shadow-sm transition-colors hover:bg-navy-light">
-          <LogIn className="h-4 w-4" />
-          <span className="hidden md:inline">{str.login}</span>
-          <span className="md:hidden">Login</span>
+        <div className="hidden items-center gap-2 rounded-md border border-gray-200 bg-panel px-3 py-1.5 lg:flex">
+          <UserCircle2 className="h-5 w-5 text-navy" />
+          <div className="leading-tight">
+            <div className="text-[9px] uppercase tracking-wide text-muted">{str.signedInAs}</div>
+            <div className="text-[12px] font-semibold text-navy">{user?.displayName ?? '—'}</div>
+          </div>
+        </div>
+        <button
+          onClick={onSignOut}
+          className="gov-focus flex items-center gap-2 rounded-md bg-navy px-3.5 py-2 text-[12px] font-semibold text-white shadow-sm transition-colors hover:bg-navy-light"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="hidden md:inline">{str.signOut}</span>
         </button>
       </div>
     </header>

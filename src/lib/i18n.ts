@@ -17,7 +17,10 @@ export interface Strings {
   password: string;
   passwordPlaceholder: string;
   loginButton: string;
+  loginPending: string;
   loginHint: string;
+  signOut: string;
+  signedInAs: string;
   textSize: string;
   language: string;
   highContrast: string;
@@ -72,7 +75,10 @@ export const STRINGS: Record<Lang, Strings> = {
     password: 'Password',
     passwordPlaceholder: 'Enter password',
     loginButton: 'Sign In',
-    loginHint: 'This is a demo login. Any non-empty credentials will work.',
+    loginPending: 'Signing in…',
+    loginHint: 'Demo access — Officer ID: nodal.officer · Password: neervana@2026',
+    signOut: 'Sign Out',
+    signedInAs: 'Signed in as',
     textSize: 'Text Size',
     language: 'Language',
     highContrast: 'High Contrast',
@@ -125,7 +131,10 @@ export const STRINGS: Record<Lang, Strings> = {
     password: 'ਪਾਸਵਰਡ',
     passwordPlaceholder: 'ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ',
     loginButton: 'ਸਾਇਨ ਇਨ',
-    loginHint: 'ਇਹ ਡੈਮੋ ਲੌਗਇਨ ਹੈ। ਕੋਈ ਵੀ ਖਾਲੀ ਨਹੀਂ ਹੋਣ ਵਾਲੀ ਜਾਣਕਾਰੀ ਕੰਮ ਕਰੇਗੀ।',
+    loginPending: 'ਸਾਇਨ ਇਨ ਹੋ ਰਿਹਾ ਹੈ…',
+    loginHint: 'ਡੈਮੋ ਪਹੁੰਚ — ਅਧਿਕਾਰੀ ID: nodal.officer · ਪਾਸਵਰਡ: neervana@2026',
+    signOut: 'ਸਾਇਨ ਆਊਟ',
+    signedInAs: 'ਸਾਇਨ ਇਨ ਹੋਏ',
     textSize: 'ਟੈਕਸਟ ਆਕਾਰ',
     language: 'ਭਾਸ਼ਾ',
     highContrast: 'ਉੱਚ ਕੰਟ੍ਰਾਸਟ',

@@ -5,10 +5,11 @@ import type { Strings } from '../../lib/i18n';
 interface Props {
   str: Strings;
   error?: string | null;
+  loading?: boolean;
   onSignIn: (username: string, password: string) => void;
 }
 
-export default function LoginPage({ str, error, onSignIn }: Props) {
+export default function LoginPage({ str, error, loading = false, onSignIn }: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -71,9 +72,13 @@ export default function LoginPage({ str, error, onSignIn }: Props) {
 
           <button
             type="submit"
-            className="w-full rounded-md bg-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-navy-light"
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-navy-light disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {str.loginButton}
+            {loading && (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+            )}
+            {loading ? str.loginPending : str.loginButton}
           </button>
 
           <p className="text-xs leading-5 text-muted">{str.loginHint}</p>
