@@ -1,0 +1,51 @@
+# render.yaml — NEERVANA full-stack Blueprint.
+#
+# One Node web service serves BOTH the built SPA (dist/) and the /api routes,
+# backed by a managed Postgres. Deploying: push to `main`, then in the Render
+# dashboard → "New +" → "Blueprint" → pick this repo. See DEPLOY.md for the
+# full walkthrough and the one secret you must set (SEED_OFFICER_PASSWORD).
+#
+# Free tier notes: the web service cold-starts after ~15 min idle, and a free
+# Postgres instance is removed by Render after 30 days. Upgrade either to a
+# paid plan for always-on / persistent data.
+
+databases:
+  - name: neervana-db
+    databaseName: neervana
+    user: neervana
+    plan: free
+
+services:
+  - type: web
+    name: neervana
+    runtime: node
+    plan: free
+    branch: main
+    # Build tools (vite, tsx, prisma, typescript) live in devDependencies, so
+    # install them explicitly; then generate the client, build the SPA, apply
+    # migrations and (idempotently) seed. Seeding re-applies demo data on every
+    # deploy — see DEPLOY.md if you want to run it only once.
+    buildCommand: >-
+      npm ci --include=dev &&
+      npm run db:generate &&
+      npm run build &&
+      npm run db:deploy &&
+      npm run db:seed
+    startCommand: npm run start:server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SERVE_WEB
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: neervana-db
+          property: connectionString
+      # Strong random secret generated and pinned by Render on first deploy.
+      - key: JWT_SECRET
+        generateValue: true
+      # Set this yourself in the dashboard (Environment tab) — it is the login
+      # password for the seeded `nodal.officer` account. Do not commit it.
+      - key: SEED_OFFICER_PASSWORD
+        sync: false

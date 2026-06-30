@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
-// `base` is only applied to production builds so the app works under the GitHub
-// Pages project path (https://<user>.github.io/neervana/) while local dev and
-// `vite preview` continue to serve from root.
+// `base` defaults to '/' because the production build is served from the root
+// of the full-stack service (the Express server serves dist/ alongside /api).
+// Override with VITE_BASE at build time if hosting under a subpath (e.g. a
+// GitHub Pages project path '/repo/').
 //
 // The dev server honours the `PORT` env var so the preview harness can assign a
 // free port (autoPort), and proxies `/api` to the Express backend so the client
@@ -12,7 +13,7 @@ import react from '@vitejs/plugin-react'
 const API_PORT = process.env.API_PORT || '8787'
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/neervana/' : '/',
+  base: command === 'build' ? process.env.VITE_BASE ?? '/' : '/',
   plugins: [react()],
   server: {
     port: process.env.PORT ? Number(process.env.PORT) : 5173,

@@ -1,3 +1,4 @@
+import path from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import { config } from './config';
@@ -16,6 +17,18 @@ export function createApp() {
   app.use(requestLogger);
 
   app.use('/api', apiRouter);
+
+  // In production, serve the built SPA (dist/) from this same origin so the
+  // frontend and API share one host. The negative-lookahead fallback returns
+  // index.html for client-side routes while leaving unmatched /api/* requests
+  // to the JSON 404 handler below.
+  if (config.serveWeb) {
+    const webDir = path.resolve(process.cwd(), 'dist');
+    app.use(express.static(webDir));
+    app.get(/^\/(?!api\/).*/, (_req, res) => {
+      res.sendFile(path.join(webDir, 'index.html'));
+    });
+  }
 
   app.use(notFound);
   app.use(errorHandler);

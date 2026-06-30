@@ -14,9 +14,13 @@ const nodeEnv = process.env.NODE_ENV ?? 'development';
 export const config = {
   nodeEnv,
   isDev: nodeEnv !== 'production',
-  apiPort: Number(process.env.API_PORT) || 8787,
+  // Render and most PaaS inject PORT; fall back to API_PORT, then a dev default.
+  apiPort: Number(process.env.PORT) || Number(process.env.API_PORT) || 8787,
   corsOrigin: process.env.CORS_ORIGIN ?? '*',
   logLevel: process.env.LOG_LEVEL ?? 'info',
+  // Serve the built SPA (dist/) from this same service so the frontend and
+  // /api share one origin in production — no CORS, single deploy.
+  serveWeb: process.env.SERVE_WEB === 'true' || nodeEnv === 'production',
   databaseUrl: required('DATABASE_URL', 'postgresql://neervana:neervana@localhost:5432/neervana?schema=public'),
   // Auth
   jwtSecret: process.env.JWT_SECRET ?? 'neervana-dev-secret-change-me',
