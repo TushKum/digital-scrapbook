@@ -9,6 +9,10 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // The CLI (migrate deploy / seed) needs a DIRECT, unpooled connection —
+    // running migrations over a PgBouncer transaction pooler can fail on
+    // prepared statements. Prefer DIRECT_URL when set (unpooled); else fall
+    // back to DATABASE_URL (same as the app, for local/docker).
+    url: process.env["DIRECT_URL"] ?? process.env["DATABASE_URL"],
   },
 });

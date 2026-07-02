@@ -9,6 +9,8 @@
     "server": "tsx watch server/src/index.ts",
     "start:server": "tsx server/src/index.ts",
     "build": "tsc -b && vite build",
+    "vercel-build": "prisma generate && vite build",
+    "postinstall": "prisma generate",
     "typecheck:server": "tsc -p server/tsconfig.json",
     "lint": "eslint .",
     "preview": "vite preview",

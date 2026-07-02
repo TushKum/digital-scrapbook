@@ -1,15 +1,63 @@
 # Deploying NEERVANA
 
-NEERVANA deploys as **one full-stack service**: a Node/Express process that
-serves the built React SPA (`dist/`) and the `/api` routes from the same origin,
-backed by a managed PostgreSQL database. No CORS, no second deploy, one URL.
+NEERVANA can deploy two ways, both single-origin (SPA and `/api` on one domain,
+no CORS):
 
-The repo ships a [`render.yaml`](render.yaml) Blueprint for **Render**, which is
-the fastest path. A manual recipe (works on Railway, Fly, a VPS, etc.) follows.
+- **Vercel (serverless)** — the Vite SPA on Vercel's CDN + the Express app as one
+  serverless function, backed by a **Neon** Postgres. See **Option A** below.
+- **Render / any Node host (long-running)** — one Node/Express process serves
+  `dist/` + `/api`, backed by a managed Postgres. The repo ships a
+  [`render.yaml`](render.yaml) Blueprint. See **Option B / C**.
 
 ---
 
-## Option A — Render (Blueprint, recommended)
+## Option A — Vercel (serverless + Neon Postgres)
+
+Vercel can't run a long-lived server or host Postgres, so the app is adapted:
+the SPA is served by Vercel's CDN and the Express app runs as a single function
+([`api/index.ts`](api/index.ts), configured by [`vercel.json`](vercel.json)),
+with an external **Neon** Postgres. Migrations run from your machine, never on
+Vercel.
+
+**1. Create the database on [Neon](https://neon.tech).** Copy TWO connection
+strings from the project's Connection Details (both end with `?sslmode=require`):
+- **Pooled** — host contains `-pooler` (PgBouncer). This is `DATABASE_URL` (app runtime).
+- **Direct** — same host *without* `-pooler`. This is `DIRECT_URL` (migrations only).
+
+**2. Migrate + seed from your machine** (once, before the first deploy — never on
+Vercel):
+```bash
+npm ci
+DIRECT_URL='<Neon DIRECT url>' npm run db:deploy          # prisma migrate deploy
+DATABASE_URL='<Neon DIRECT url>' SEED_OFFICER_PASSWORD='<strong>' npm run db:seed
+```
+
+**3. Import the repo on Vercel** → *Add New… → Project*. Framework preset **Vite**
+is auto-detected; leave Build/Output as-is (`vercel.json` sets
+`buildCommand: prisma generate && vite build`, `outputDirectory: dist`). Keep the
+**Root Directory** at the repo root (where `vercel.json` and `api/` live).
+
+**4. Set Environment Variables** (Project → Settings → Environment Variables, for
+**Production _and_ Preview**):
+- `DATABASE_URL` = the Neon **pooled** (`-pooler`) string
+- `JWT_SECRET` = a strong random value (`openssl rand -hex 32`)
+- optional: `JWT_EXPIRES_IN=8h`, `CORS_ORIGIN=*`, `LOG_LEVEL=info`
+- **Do NOT set** `SERVE_WEB`, `PORT`, `API_PORT`, `DIRECT_URL`, or `NODE_ENV` on
+  Vercel — the function is API-only and Vercel manages `NODE_ENV`.
+
+**5. Deploy**, then open the URL and log in as `nodal.officer` with the
+`SEED_OFFICER_PASSWORD` you seeded. For later schema changes: re-run
+`npm run db:deploy` against `DIRECT_URL` from your machine, then redeploy.
+
+> **Post-deploy check (Prisma):** this uses Prisma 7's WASM query compiler,
+> pinned into the function bundle via `vercel.json` `includeFiles`. After the
+> first deploy, confirm a real query works (log in). If it 500s with a missing
+> `query_compiler_fast_bg.postgresql*` module, check the Function logs — the
+> `includeFiles` glob is what bundles that ~5 MB runtime asset.
+
+---
+
+## Option B — Render (Blueprint)
 
 **Prerequisites:** a free [Render](https://render.com) account and this repo on
 GitHub with the deploy changes on `main` (already pushed).
@@ -43,7 +91,7 @@ Health check is `GET /api/health`. Subsequent pushes to `main` auto-deploy.
 
 ---
 
-## Option B — Any Node host (manual)
+## Option C — Any Node host (manual)
 
 Provision a PostgreSQL database, then run the service with these env vars set
 (see [`.env.example`](.env.example)):
