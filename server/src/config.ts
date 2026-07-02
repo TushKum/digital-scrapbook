@@ -10,17 +10,20 @@ function required(name: string, fallback?: string): string {
 }
 
 const nodeEnv = process.env.NODE_ENV ?? 'development';
+// Serve the built SPA (dist/) from this same service so the frontend and /api
+// share one origin in production — no CORS, single deploy.
+const serveWeb = process.env.SERVE_WEB === 'true' || nodeEnv === 'production';
 
 export const config = {
   nodeEnv,
   isDev: nodeEnv !== 'production',
-  // Render and most PaaS inject PORT; fall back to API_PORT, then a dev default.
-  apiPort: Number(process.env.PORT) || Number(process.env.API_PORT) || 8787,
+  // In production the app runs as one service and binds the host-injected PORT.
+  // In dev the web (vite) server owns PORT, so the API stays on API_PORT to
+  // avoid colliding with it.
+  apiPort: serveWeb ? Number(process.env.PORT) || 8787 : Number(process.env.API_PORT) || 8787,
   corsOrigin: process.env.CORS_ORIGIN ?? '*',
   logLevel: process.env.LOG_LEVEL ?? 'info',
-  // Serve the built SPA (dist/) from this same service so the frontend and
-  // /api share one origin in production — no CORS, single deploy.
-  serveWeb: process.env.SERVE_WEB === 'true' || nodeEnv === 'production',
+  serveWeb,
   databaseUrl: required('DATABASE_URL', 'postgresql://neervana:neervana@localhost:5432/neervana?schema=public'),
   // Auth
   jwtSecret: process.env.JWT_SECRET ?? 'neervana-dev-secret-change-me',
