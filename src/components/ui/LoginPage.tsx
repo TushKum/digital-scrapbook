@@ -1,6 +1,7 @@
 import { ShieldCheck, User, Key } from 'lucide-react';
 import { useState } from 'react';
 import type { Strings } from '../../lib/i18n';
+import { CpuArchitecture } from './cpu-architecture';
 
 interface Props {
   str: Strings;
@@ -28,6 +29,15 @@ export default function LoginPage({ str, error, loading = false, onSignIn }: Pro
               {str.loginTitle}
             </h1>
           </div>
+        </div>
+
+        <div className="flex justify-center">
+          <CpuArchitecture 
+            width="120" 
+            height="120" 
+            text="SECURE"
+            className="text-navy"
+          />
         </div>
 
         <p className="text-sm leading-6 text-ink">{str.loginPrompt}</p>

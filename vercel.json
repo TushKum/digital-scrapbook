@@ -8,19 +8,12 @@
       "config": { "distDir": "dist" }
     },
     {
-      "src": "api/*.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "{server/src/generated/prisma/**,node_modules/@prisma/client/runtime/query_compiler_fast_bg.postgresql*}"
-      }
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
-    { "src": "^/api/probe-basic$", "dest": "/api/probe-basic.ts" },
-    { "src": "^/api/probe-config$", "dest": "/api/probe-config.ts" },
-    { "src": "^/api/probe-logger$", "dest": "/api/probe-logger.ts" },
-    { "src": "^/api/probe-prisma$", "dest": "/api/probe-prisma.ts" },
-    { "src": "^/api(/.*)?$", "dest": "/api/index.ts" },
+    { "src": "^/api(/.*)?$", "dest": "/api/index.js" },
     { "handle": "filesystem" },
     { "src": "^/(.*)$", "dest": "/index.html" }
   ]
