@@ -1,23 +1,33 @@
 // Vercel serverless entry for the Express API.
 //
-// Vercel has native TypeScript support for files under api/, so it compiles this
-// on the fly — tsx is only used by local dev/start scripts, never in production.
-// The whole Express app becomes ONE Vercel Function, and Vercel passes the
-// ORIGINAL request path through unchanged: POST /api/auth/login still arrives as
-// "/api/auth/login", so createApp()'s `app.use('/api', apiRouter)` mount keeps
-// working as-is (Express strips its own mount prefix; Vercel does not strip /api).
+// The Express app is created lazily on the first request instead of at module
+// load. Two reasons:
+//  - a module-scope crash (missing env var, import failure) would surface as an
+//    opaque FUNCTION_INVOCATION_FAILED page; here we catch it and return the
+//    real error as JSON so it can be diagnosed from the HTTP response;
+//  - the created app is cached on globalThis, so warm invocations reuse it (and
+//    the module-scope PrismaClient inside it), same as the eager pattern.
 //
-// This file must ONLY export the app — no app.listen() and no SIGINT/SIGTERM
-// handlers. Those live in server/src/index.ts for the long-running Render
-// service. The SPA (dist/) is served by Vercel's CDN, and createApp()'s
-// static/SPA branch is gated off on Vercel (config.serveWeb is false when the
-// VERCEL env is set), so this function stays API-only.
-//
-// The Prisma client is imported transitively (createApp -> routes -> repos ->
-// db/prisma) and instantiated once at module scope, so warm Fluid invocations
-// reuse the connection pool.
-import { createApp } from '../server/src/app';
+// Vercel passes the ORIGINAL request path through unchanged, so createApp()'s
+// `app.use('/api', apiRouter)` mount keeps working as-is. No app.listen() here —
+// that lives in server/src/index.ts for the long-running Render service.
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
-const app = createApp();
+type ExpressHandler = (req: IncomingMessage, res: ServerResponse) => void;
 
-export default app;
+const cache = globalThis as { __neervanaApp?: ExpressHandler };
+
+export default async function handler(req: IncomingMessage, res: ServerResponse) {
+  try {
+    if (!cache.__neervanaApp) {
+      const { createApp } = await import('../server/src/app');
+      cache.__neervanaApp = createApp() as unknown as ExpressHandler;
+    }
+    return cache.__neervanaApp(req, res);
+  } catch (err) {
+    const detail = err instanceof Error ? `${err.message}\n${err.stack ?? ''}` : String(err);
+    res.statusCode = 500;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify({ error: 'boot_failure', detail }));
+  }
+}
