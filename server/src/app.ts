@@ -1,7 +1,7 @@
 import path from 'node:path';
 import express from 'express';
 import cors from 'cors';
-import { config } from './config';
+import { assertConfig, config } from './config';
 import { apiRouter } from './routes';
 import { requestLogger } from './middleware/requestLogger';
 import { notFound } from './middleware/notFound';
@@ -9,6 +9,8 @@ import { errorHandler } from './middleware/errorHandler';
 
 // Builds the Express application (separated from listen() so it can be tested).
 export function createApp() {
+  assertConfig();
+
   const app = express();
 
   app.disable('x-powered-by');

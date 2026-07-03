@@ -1,12 +1,24 @@
 import 'dotenv/config';
 
-// Centralised, validated environment configuration.
+// Centralised, validated environment configuration. Missing required vars are
+// collected instead of thrown at module load, so a serverless entry can import
+// this module and surface a readable error per request; assertConfig() is the
+// fail-loud gate, called from createApp() and the server bootstrap.
+const missingVars: string[] = [];
+
 function required(name: string, fallback?: string): string {
   const v = process.env[name] ?? fallback;
   if (v === undefined || v === '') {
-    throw new Error(`Missing required environment variable: ${name}`);
+    missingVars.push(name);
+    return '';
   }
   return v;
+}
+
+export function assertConfig(): void {
+  if (missingVars.length > 0) {
+    throw new Error(`Missing required environment variable(s): ${missingVars.join(', ')}`);
+  }
 }
 
 const nodeEnv = process.env.NODE_ENV ?? 'development';
