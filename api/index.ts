@@ -1,29 +1,27 @@
 // Vercel serverless entry for the Express API.
 //
-// The Express app is created lazily on the first request instead of at module
-// load. Two reasons:
-//  - a module-scope crash (missing env var, import failure) would surface as an
-//    opaque FUNCTION_INVOCATION_FAILED page; here we catch it and return the
-//    real error as JSON so it can be diagnosed from the HTTP response;
-//  - the created app is cached on globalThis, so warm invocations reuse it (and
-//    the module-scope PrismaClient inside it), same as the eager pattern.
+// The import MUST be static: Vercel's builder compiles the TypeScript import
+// graph (api/ -> server/src/**) into the function bundle. A dynamic import()
+// is left unbundled and fails at runtime with ERR_MODULE_NOT_FOUND, because
+// the raw .ts sources aren't executable in the deployed function.
 //
 // Vercel passes the ORIGINAL request path through unchanged, so createApp()'s
 // `app.use('/api', apiRouter)` mount keeps working as-is. No app.listen() here —
 // that lives in server/src/index.ts for the long-running Render service.
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { createApp } from '../server/src/app';
 
 type ExpressHandler = (req: IncomingMessage, res: ServerResponse) => void;
 
-const cache = globalThis as { __neervanaApp?: ExpressHandler };
+// Created once per instance and reused across warm invocations (same lifetime
+// as a module-scope instance). Wrapped in the handler so a createApp() failure
+// surfaces as a readable JSON error instead of FUNCTION_INVOCATION_FAILED.
+let app: ExpressHandler | undefined;
 
-export default async function handler(req: IncomingMessage, res: ServerResponse) {
+export default function handler(req: IncomingMessage, res: ServerResponse) {
   try {
-    if (!cache.__neervanaApp) {
-      const { createApp } = await import('../server/src/app');
-      cache.__neervanaApp = createApp() as unknown as ExpressHandler;
-    }
-    return cache.__neervanaApp(req, res);
+    app ??= createApp() as unknown as ExpressHandler;
+    return app(req, res);
   } catch (err) {
     const detail = err instanceof Error ? `${err.message}\n${err.stack ?? ''}` : String(err);
     res.statusCode = 500;
