@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -15,6 +16,10 @@ const API_PORT = process.env.API_PORT || '8787'
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? process.env.VITE_BASE ?? '/' : '/',
   plugins: [react()],
+  resolve: {
+    // Standard shadcn-style alias so components can import "@/lib/utils" etc.
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
   server: {
     port: process.env.PORT ? Number(process.env.PORT) : 5173,
     strictPort: Boolean(process.env.PORT),
