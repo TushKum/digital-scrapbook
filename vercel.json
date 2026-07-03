@@ -1,15 +1,23 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "vite",
-  "buildCommand": "prisma generate && vite build",
-  "outputDirectory": "dist",
-  "functions": {
-    "api/index.ts": {
-      "includeFiles": "{server/src/generated/prisma/**,node_modules/@prisma/client/runtime/query_compiler_fast_bg.postgresql*}"
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    },
+    {
+      "src": "api/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": "{server/src/generated/prisma/**,node_modules/@prisma/client/runtime/query_compiler_fast_bg.postgresql*}"
+      }
     }
-  },
-  "rewrites": [
-    { "source": "/api", "destination": "/api" },
-    { "source": "/api/(.*)", "destination": "/api" }
+  ],
+  "routes": [
+    { "src": "^/api(/.*)?$", "dest": "/api/index.ts" },
+    { "handle": "filesystem" },
+    { "src": "^/(.*)$", "dest": "/index.html" }
   ]
 }
