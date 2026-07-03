@@ -7,7 +7,7 @@ export default function handler(_req: IncomingMessage, res: ServerResponse) {
   res.end(
     JSON.stringify({
       probe: 'basic',
-      marker: 'bisect-1',
+      marker: 'bisect-2-cjs',
       node: process.version,
       vercelEnv: process.env.VERCEL_ENV ?? null,
       hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
