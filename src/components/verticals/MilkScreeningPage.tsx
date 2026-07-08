@@ -158,7 +158,7 @@ export default function MilkScreeningPage() {
 
       {/* Vertical navigation — tab strip, same official look as the panels */}
       <nav aria-label="Product verticals" className="border-b border-gray-200 bg-white px-4">
-        <div className="mx-auto flex max-w-6xl gap-1 text-[12px] font-semibold">
+        <div className="gov-scroll mx-auto flex max-w-6xl gap-1 overflow-x-auto whitespace-nowrap text-[12px] font-semibold">
           <a
             href="/"
             className="gov-focus border-b-2 border-transparent px-3 py-2.5 text-muted transition-colors hover:text-navy"

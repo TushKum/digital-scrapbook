@@ -1,4 +1,4 @@
-import { ArrowRight, ShieldCheck, User, Key } from 'lucide-react';
+import { ArrowRight, Droplets, Key, LayoutDashboard, Milk, ShieldCheck, User } from 'lucide-react';
 import { useState } from 'react';
 import type { Strings } from '../../lib/i18n';
 import { CpuArchitecture } from './cpu-architecture';
@@ -49,7 +49,7 @@ export default function LoginPage({ str, error, loading = false, onSignIn }: Pro
         >
           <label className="grid gap-2 text-sm font-semibold text-ink">
             {str.username}
-            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 focus-within:border-navy focus-within:ring-2 focus-within:ring-navy/20">
+            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-panel px-3 py-2 focus-within:border-navy focus-within:ring-2 focus-within:ring-navy/20">
               <User className="h-4 w-4 text-muted" />
               <input
                 value={username}
@@ -63,7 +63,7 @@ export default function LoginPage({ str, error, loading = false, onSignIn }: Pro
 
           <label className="grid gap-2 text-sm font-semibold text-ink">
             {str.password}
-            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 focus-within:border-navy focus-within:ring-2 focus-within:ring-navy/20">
+            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-panel px-3 py-2 focus-within:border-navy focus-within:ring-2 focus-within:ring-navy/20">
               <Key className="h-4 w-4 text-muted" />
               <input
                 type="password"
@@ -81,7 +81,7 @@ export default function LoginPage({ str, error, loading = false, onSignIn }: Pro
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-navy-light disabled:cursor-not-allowed disabled:opacity-60"
+            className="gov-focus flex w-full items-center justify-center gap-2 rounded-md bg-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-navy-light disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -92,14 +92,37 @@ export default function LoginPage({ str, error, loading = false, onSignIn }: Pro
           <p className="text-xs leading-5 text-muted">{str.loginHint}</p>
         </form>
 
-        {/* Product verticals — public pages, no sign-in required */}
-        <div className="border-t border-gray-200 pt-4">
-          <p className="gov-eyebrow">Product Verticals</p>
+        {/* Public entry points — no sign-in required */}
+        <div className="space-y-2 border-t border-gray-200 pt-4">
+          <p className="gov-eyebrow">Public Access</p>
+          <a
+            href="/advisory"
+            className="gov-focus flex items-center justify-between rounded-lg border border-india-green/30 bg-india-greenTint px-3 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-india-green/50"
+          >
+            <span className="flex items-center gap-2">
+              <Droplets className="h-4 w-4 text-india-green" aria-hidden="true" />
+              Village Water &amp; Health Advisory
+            </span>
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </a>
           <a
             href="/verticals/milk-screening"
-            className="gov-focus mt-2 flex items-center justify-between rounded-lg border border-gray-200 bg-panel px-3 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-navy-tint"
+            className="gov-focus flex items-center justify-between rounded-lg border border-gray-200 bg-panel px-3 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-navy-tint"
           >
-            Milk Adulteration Screening
+            <span className="flex items-center gap-2">
+              <Milk className="h-4 w-4 text-navy" aria-hidden="true" />
+              Milk Adulteration Screening
+            </span>
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+          <a
+            href="/asha"
+            className="gov-focus flex items-center justify-between rounded-lg border border-gray-200 bg-panel px-3 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-navy-tint"
+          >
+            <span className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4 text-navy" aria-hidden="true" />
+              ASHA Field Dashboard
+            </span>
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </a>
         </div>

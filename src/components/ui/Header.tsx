@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Landmark, LogOut, RefreshCw, ShieldCheck, UserCircle2 } from 'lucide-react';
+import { Landmark, LayoutDashboard, LogOut, RefreshCw, ShieldCheck, UserCircle2 } from 'lucide-react';
 import type { Strings } from '../../lib/i18n';
 import type { AuthUser } from '../../lib/api';
 
@@ -59,6 +59,14 @@ export default function Header({ str, user, onSignOut }: Props) {
             {str.lastUpdated} · {dateStr}
           </div>
         </div>
+        <a
+          href="/asha"
+          aria-label="ASHA View"
+          className="gov-focus hidden items-center gap-1.5 rounded-md border border-gray-200 bg-panel px-3 py-2 text-[12px] font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-navy-tint md:flex"
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          <span className="hidden lg:inline">ASHA View</span>
+        </a>
         <div className="hidden items-center gap-2 rounded-md border border-gray-200 bg-panel px-3 py-1.5 lg:flex">
           <UserCircle2 className="h-5 w-5 text-navy" />
           <div className="leading-tight">

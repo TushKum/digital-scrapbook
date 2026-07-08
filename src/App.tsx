@@ -16,15 +16,21 @@ import MapLegend from './components/ui/MapLegend';
 import BootStatus from './components/ui/BootStatus';
 import LoginPage from './components/ui/LoginPage';
 import MilkScreeningPage from './components/verticals/MilkScreeningPage';
+import VillagerAdvisory from './components/dashboards/VillagerAdvisory';
+import AshaDashboard from './components/dashboards/AshaDashboard';
 
 const FONT_PX = [14, 16, 18];
 
-// Public product-vertical routes served without authentication. Navigation is
-// plain <a href> full-page loads; the SPA fallback (vite dev + Vercel routes)
-// returns index.html for any path, so deep links work.
-const VERTICAL_ROUTES: Record<string, () => React.JSX.Element> = {
+// Public routes served without authentication. Navigation is plain <a href>
+// full-page loads; the SPA fallback (vite dev + Vercel routes) returns
+// index.html for any path, so deep links work.
+const PUBLIC_ROUTES: Record<string, () => React.JSX.Element> = {
   '/verticals/milk-screening': () => <MilkScreeningPage />,
+  '/advisory': () => <VillagerAdvisory />,
 };
+
+// Authenticated routes (rendered only once signed in).
+const ASHA_ROUTE = '/asha';
 
 export default function App() {
   const [time, setTime] = useState<TimeKey>('epi22');
@@ -37,10 +43,10 @@ export default function App() {
   const auth = useAuth();
   const authed = auth.status === 'authenticated';
 
-  // Public vertical pages bypass the auth gate entirely. Normalise trailing
-  // slashes so pasted links like /verticals/milk-screening/ still resolve.
+  // Public pages bypass the auth gate entirely. Normalise trailing slashes so
+  // pasted links like /verticals/milk-screening/ still resolve.
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
-  const publicPage = VERTICAL_ROUTES[path];
+  const publicPage = PUBLIC_ROUTES[path];
 
   // Surveillance dataset loads from the backend once authenticated.
   const { status, blocks, dispatches, error, reload } = useBootstrap(authed);
@@ -90,6 +96,28 @@ export default function App() {
         error={auth.loginError}
         loading={auth.loginPending}
         onSignIn={auth.login}
+      />
+    );
+  }
+
+  // Authenticated ASHA field dashboard — fed by this shell's data + chrome so
+  // there is no duplicate fetch or accessibility-effect.
+  if (path === ASHA_ROUTE) {
+    return (
+      <AshaDashboard
+        blocks={blocks}
+        dispatches={dispatches}
+        status={status}
+        error={error}
+        reload={reload}
+        user={auth.user}
+        onSignOut={auth.logout}
+        lang={lang}
+        onLang={setLang}
+        textScale={textScale}
+        onTextScale={setTextScale}
+        contrast={contrast}
+        onContrast={setContrast}
       />
     );
   }

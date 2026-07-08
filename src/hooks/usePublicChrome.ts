@@ -7,10 +7,10 @@ const FONT_PX = [14, 16, 18];
 // public pages that render outside the authenticated App shell. Mirrors the
 // exact behaviour App.tsx applies for the dashboard: rem-base scaling and the
 // data-contrast attribute on <html>.
-export function usePublicChrome() {
+export function usePublicChrome(initialLang: Lang = 'EN') {
   const [textScale, setTextScale] = useState(1);
   const [contrast, setContrast] = useState(false);
-  const [lang, setLang] = useState<Lang>('EN');
+  const [lang, setLang] = useState<Lang>(initialLang);
 
   useEffect(() => {
     document.documentElement.style.fontSize = `${FONT_PX[textScale] ?? 16}px`;
