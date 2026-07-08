@@ -29,6 +29,8 @@ const CpuArchitecture = ({
       width={width}
       height={height}
       viewBox="0 0 200 100"
+      aria-hidden="true"
+      focusable="false"
     >
       {/* Paths */}
       <g

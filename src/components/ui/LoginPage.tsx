@@ -1,4 +1,4 @@
-import { ShieldCheck, User, Key } from 'lucide-react';
+import { ArrowRight, ShieldCheck, User, Key } from 'lucide-react';
 import { useState } from 'react';
 import type { Strings } from '../../lib/i18n';
 import { CpuArchitecture } from './cpu-architecture';
@@ -22,9 +22,7 @@ export default function LoginPage({ str, error, loading = false, onSignIn }: Pro
             <ShieldCheck className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted">
-              {str.portalSub}
-            </p>
+            <p className="gov-eyebrow-lg">{str.portalSub}</p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-navy">
               {str.loginTitle}
             </h1>
@@ -93,6 +91,18 @@ export default function LoginPage({ str, error, loading = false, onSignIn }: Pro
 
           <p className="text-xs leading-5 text-muted">{str.loginHint}</p>
         </form>
+
+        {/* Product verticals — public pages, no sign-in required */}
+        <div className="border-t border-gray-200 pt-4">
+          <p className="gov-eyebrow">Product Verticals</p>
+          <a
+            href="/verticals/milk-screening"
+            className="gov-focus mt-2 flex items-center justify-between rounded-lg border border-gray-200 bg-panel px-3 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-navy-tint"
+          >
+            Milk Adulteration Screening
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+        </div>
       </div>
     </div>
   );

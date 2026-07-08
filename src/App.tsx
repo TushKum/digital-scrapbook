@@ -15,8 +15,16 @@ import TimeFilter from './components/ui/TimeFilter';
 import MapLegend from './components/ui/MapLegend';
 import BootStatus from './components/ui/BootStatus';
 import LoginPage from './components/ui/LoginPage';
+import MilkScreeningPage from './components/verticals/MilkScreeningPage';
 
 const FONT_PX = [14, 16, 18];
+
+// Public product-vertical routes served without authentication. Navigation is
+// plain <a href> full-page loads; the SPA fallback (vite dev + Vercel routes)
+// returns index.html for any path, so deep links work.
+const VERTICAL_ROUTES: Record<string, () => React.JSX.Element> = {
+  '/verticals/milk-screening': () => <MilkScreeningPage />,
+};
 
 export default function App() {
   const [time, setTime] = useState<TimeKey>('epi22');
@@ -28,6 +36,11 @@ export default function App() {
 
   const auth = useAuth();
   const authed = auth.status === 'authenticated';
+
+  // Public vertical pages bypass the auth gate entirely. Normalise trailing
+  // slashes so pasted links like /verticals/milk-screening/ still resolve.
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  const publicPage = VERTICAL_ROUTES[path];
 
   // Surveillance dataset loads from the backend once authenticated.
   const { status, blocks, dispatches, error, reload } = useBootstrap(authed);
@@ -50,6 +63,12 @@ export default function App() {
   const str = STRINGS[lang];
   const agg = useMemo(() => aggregate(blocks, time), [blocks, time]);
   const ready = status === 'ready';
+
+  // Public vertical page (no sign-in required). Rendered after hooks so the
+  // rules-of-hooks order stays stable across routes.
+  if (publicPage) {
+    return publicPage();
+  }
 
   // Restoring a stored session.
   if (auth.status === 'checking') {
