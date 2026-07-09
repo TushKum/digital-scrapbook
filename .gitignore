@@ -29,3 +29,7 @@ dist-ssr
 # Prisma generated client + backend build output
 server/src/generated
 server/dist
+
+# Vercel serverless API bundle — generated from source at build time
+# (scripts/postinstall.mjs on Vercel; `npm run build:api` locally), never committed
+api/index.js
