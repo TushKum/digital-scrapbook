@@ -18,6 +18,7 @@ import LoginPage from './components/ui/LoginPage';
 import MilkScreeningPage from './components/verticals/MilkScreeningPage';
 import VillagerAdvisory from './components/dashboards/VillagerAdvisory';
 import AshaDashboard from './components/dashboards/AshaDashboard';
+import GlassLoginPage from './components/GlassLoginPage';
 
 const FONT_PX = [14, 16, 18];
 
@@ -27,6 +28,7 @@ const FONT_PX = [14, 16, 18];
 const PUBLIC_ROUTES: Record<string, () => React.JSX.Element> = {
   '/verticals/milk-screening': () => <MilkScreeningPage />,
   '/advisory': () => <VillagerAdvisory />,
+  '/glass-login': () => <GlassLoginPage />,
 };
 
 // Authenticated routes (rendered only once signed in).
