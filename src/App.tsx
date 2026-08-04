@@ -19,6 +19,7 @@ import MilkScreeningPage from './components/verticals/MilkScreeningPage';
 import VillagerAdvisory from './components/dashboards/VillagerAdvisory';
 import AshaDashboard from './components/dashboards/AshaDashboard';
 import GlassLoginPage from './components/GlassLoginPage';
+import NotFound from './components/ui/NotFound';
 
 const FONT_PX = [14, 16, 18];
 
@@ -50,6 +51,10 @@ export default function App() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
   const publicPage = PUBLIC_ROUTES[path];
 
+  // Any path that isn't a known route is a 404 (rendered regardless of auth;
+  // vercel.json serves this with a real HTTP 404 status).
+  const isKnownRoute = path === '/' || path === ASHA_ROUTE || path in PUBLIC_ROUTES;
+
   // Surveillance dataset loads from the backend once authenticated.
   const { status, blocks, dispatches, error, reload } = useBootstrap(authed);
 
@@ -72,8 +77,13 @@ export default function App() {
   const agg = useMemo(() => aggregate(blocks, time), [blocks, time]);
   const ready = status === 'ready';
 
-  // Public vertical page (no sign-in required). Rendered after hooks so the
-  // rules-of-hooks order stays stable across routes.
+  // Unknown route → public 404 page (rendered after hooks to keep hook order
+  // stable across routes).
+  if (!isKnownRoute) {
+    return <NotFound />;
+  }
+
+  // Public vertical page (no sign-in required).
   if (publicPage) {
     return publicPage();
   }

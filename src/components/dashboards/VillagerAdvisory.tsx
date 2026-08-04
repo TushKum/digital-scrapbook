@@ -18,6 +18,7 @@ import { blockName, snapshot, snapshotStatus, statusLabel, STATUS_COLOR, STATUS_
 import { useBootstrap } from '../../hooks/useBootstrap';
 import { usePublicChrome } from '../../hooks/usePublicChrome';
 import TopUtilityBar from '../ui/TopUtilityBar';
+import DataProvenance from '../ui/DataProvenance';
 import { STATUS_ICON, STATUS_TEXT } from './marks';
 import { StatusPill } from './shared';
 
@@ -152,6 +153,7 @@ export default function VillagerAdvisory() {
               })}
             </ul>
             <WorkerLink d={d} />
+            <DataProvenance className="mt-3" />
           </div>
         )}
 
@@ -309,6 +311,8 @@ function VillageDetail({
           <p className="text-[14px] font-semibold leading-5 text-ink">{d.helpLine}</p>
         </div>
       </div>
+
+      <DataProvenance />
     </div>
   );
 }

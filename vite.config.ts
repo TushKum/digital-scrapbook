@@ -13,8 +13,13 @@ import react from '@vitejs/plugin-react'
 // can use same-origin requests with no CORS in dev.
 const API_PORT = process.env.API_PORT || '8787'
 
+// Build date, injected as a global constant so screens can show honest data
+// provenance ("Build: <date>"). Computed once per build.
+const BUILD_TIME = new Date().toISOString().slice(0, 10)
+
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? process.env.VITE_BASE ?? '/' : '/',
+  define: { __BUILD_TIME__: JSON.stringify(BUILD_TIME) },
   plugins: [react()],
   resolve: {
     // Standard shadcn-style alias so components can import "@/lib/utils" etc.

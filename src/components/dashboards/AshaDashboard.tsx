@@ -32,6 +32,7 @@ import type { Status } from '../../lib/metrics';
 import type { BootStatus } from '../../hooks/useBootstrap';
 import TopUtilityBar from '../ui/TopUtilityBar';
 import BootStatusView from '../ui/BootStatus';
+import DataProvenance from '../ui/DataProvenance';
 import { STATUS_ICON, STATUS_TEXT } from './marks';
 import { HBarList, MetricTile, StatusPill, StockMeter, WqiTrend } from './shared';
 import { STATUS_COLOR } from '../../lib/metrics';
@@ -336,6 +337,8 @@ export default function AshaDashboard({
               </ul>
             )}
           </Section>
+
+          <DataProvenance />
 
           <footer className="flex items-center justify-between py-4 text-[11px] text-muted">
             <span className="flex items-center gap-1.5"><Landmark className="h-3.5 w-3.5" /> {str.portalTitle} · {d.ashaTitle}</span>
