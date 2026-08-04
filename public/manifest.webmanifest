@@ -1,0 +1,43 @@
+{
+  "name": "NEERVANA — Patiala Water & Disease Surveillance",
+  "short_name": "NEERVANA",
+  "description": "Village-level water quality and water-borne disease early-warning for Patiala district. Officer command view, ASHA field dashboard, and public villager advisory.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#003366",
+  "theme_color": "#003366",
+  "categories": ["health", "government", "utilities"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Villager Advisory",
+      "short_name": "Advisory",
+      "description": "Check your village's water status and what to do today",
+      "url": "/advisory",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ASHA Field Dashboard",
+      "short_name": "ASHA",
+      "description": "Block status, cases and medicine stock for field workers",
+      "url": "/asha",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Command Centre",
+      "short_name": "Command",
+      "description": "District officer surveillance map",
+      "url": "/",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
