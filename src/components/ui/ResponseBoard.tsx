@@ -208,29 +208,34 @@ export default function ResponseBoard({
                   onClick={() => onSelect(selectedId === r.block.id ? null : r.block.id)}
                   onMouseEnter={() => onHover(r.block.id)}
                   onMouseLeave={() => onHover(null)}
-                  className={`gov-focus grid w-full grid-cols-[2rem_1fr_auto] items-center gap-3 rounded-md border px-3 py-2.5 text-left transition-colors ${
+                  className={`gov-focus flex w-full flex-col gap-2 rounded-md border px-3 py-2.5 text-left transition-colors sm:grid sm:grid-cols-[2rem_1fr_auto] sm:items-center sm:gap-3 ${
                     active ? 'border-navy bg-navy-tint' : 'border-gray-200 bg-white hover:bg-panel'
                   }`}
                 >
-                  <span className="text-[13px] font-bold tabular-nums text-muted">{i + 2}</span>
-
-                  <span className="min-w-0">
-                    <span className="flex items-center gap-2">
-                      <span
-                        className="h-2 w-2 shrink-0 rounded-full"
-                        style={{ backgroundColor: STATUS_COLOR[r.status] }}
-                        aria-hidden="true"
-                      />
-                      <span className="truncate text-[13px] font-bold text-navy">
-                        {blockName(r.block, lang)}
+                  {/* Rank + identity. On a phone these share one flex row and the
+                      name gets the full width (no truncation). At sm+ the wrapper
+                      dissolves (display:contents) so rank and name become the
+                      first two grid columns of the original single-row layout. */}
+                  <span className="flex min-w-0 items-start gap-2.5 sm:contents">
+                    <span className="text-[13px] font-bold tabular-nums text-muted">{i + 2}</span>
+                    <span className="min-w-0">
+                      <span className="flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full"
+                          style={{ backgroundColor: STATUS_COLOR[r.status] }}
+                          aria-hidden="true"
+                        />
+                        <span className="text-[13px] font-bold leading-tight text-navy">
+                          {blockName(r.block, lang)}
+                        </span>
                       </span>
-                    </span>
-                    <span className="mt-0.5 block truncate text-[11px] text-muted">
-                      {driverOf(r.wqiSt, r.caseSt, str)}
+                      <span className="mt-0.5 block text-[11px] leading-tight text-muted">
+                        {driverOf(r.wqiSt, r.caseSt, str)}
+                      </span>
                     </span>
                   </span>
 
-                  <span className="flex items-center gap-4 text-right tabular-nums">
+                  <span className="flex items-center justify-between gap-4 tabular-nums sm:justify-end sm:text-right">
                     <Mini label={str.colWqi} value={String(r.wqi)} tone={r.wqiSt} />
                     <Mini
                       label={str.perLakh}
