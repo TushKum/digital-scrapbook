@@ -5,20 +5,20 @@ import { STRINGS } from './lib/i18n';
 import { aggregate } from './lib/metrics';
 import { useBootstrap } from './hooks/useBootstrap';
 import { useAuth } from './hooks/useAuth';
-import Scene from './components/Scene';
 import TopUtilityBar from './components/ui/TopUtilityBar';
 import Header from './components/ui/Header';
 import Ticker from './components/ui/Ticker';
 import SurveillancePanel from './components/ui/SurveillancePanel';
 import ResourcePanel from './components/ui/ResourcePanel';
 import TimeFilter from './components/ui/TimeFilter';
-import MapLegend from './components/ui/MapLegend';
+import ResponseBoard from './components/ui/ResponseBoard';
 import BootStatus from './components/ui/BootStatus';
 import LoginPage from './components/ui/LoginPage';
 import MilkScreeningPage from './components/verticals/MilkScreeningPage';
 import VillagerAdvisory from './components/dashboards/VillagerAdvisory';
 import AshaDashboard from './components/dashboards/AshaDashboard';
 import GlassLoginPage from './components/GlassLoginPage';
+import IntegrationPage from './components/IntegrationPage';
 import NotFound from './components/ui/NotFound';
 
 const FONT_PX = [14, 16, 18];
@@ -30,6 +30,7 @@ const PUBLIC_ROUTES: Record<string, () => React.JSX.Element> = {
   '/verticals/milk-screening': () => <MilkScreeningPage />,
   '/advisory': () => <VillagerAdvisory />,
   '/glass-login': () => <GlassLoginPage />,
+  '/integration': () => <IntegrationPage />,
 };
 
 // Authenticated routes (rendered only once signed in).
@@ -135,23 +136,10 @@ export default function App() {
   }
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-white">
-      {/* 3D GIS map — full-bleed base viewport (only once data has arrived) */}
-      {ready && (
-        <Scene
-          blocks={blocks}
-          time={time}
-          lang={lang}
-          str={str}
-          selectedId={selectedId}
-          hoveredId={hoveredId}
-          onHover={setHoveredId}
-          onSelect={setSelectedId}
-        />
-      )}
-
-      {/* Top stack: utility strip + masthead + ticker (always visible) */}
-      <div className="absolute inset-x-0 top-0 z-30">
+    <main className="relative flex h-screen w-screen flex-col overflow-hidden bg-panel lg:block">
+      {/* Top stack: utility strip + masthead + ticker. Fixed at the top on
+          mobile (in-flow, non-scrolling); absolutely pinned on desktop. */}
+      <div className="z-30 shrink-0 lg:absolute lg:inset-x-0 lg:top-0">
         <TopUtilityBar
           str={str}
           textScale={textScale}
@@ -166,9 +154,32 @@ export default function App() {
       </div>
 
       {ready ? (
-        <>
+        /* Mobile: one vertical scroll column (panels stacked full-width).
+           Desktop (lg): `display:contents` dissolves this wrapper so each panel
+           positions absolutely against <main>, restoring the wall layout. */
+        <div className="gov-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3 lg:contents">
+          {/* Reporting-window filter — top of the mobile stack; floating
+              bottom-centre on desktop. */}
+          <div className="lg:absolute lg:bottom-5 lg:left-1/2 lg:z-20 lg:-translate-x-1/2">
+            <TimeFilter time={time} onTime={setTime} str={str} />
+          </div>
+
+          {/* Centre column — priority response board (replaced the 3D scene). */}
+          <div className="lg:absolute lg:bottom-[4.75rem] lg:left-[22.5rem] lg:right-[22.5rem] lg:top-[8.75rem] lg:z-10">
+            <ResponseBoard
+              blocks={blocks}
+              time={time}
+              lang={lang}
+              str={str}
+              selectedId={selectedId}
+              hoveredId={hoveredId}
+              onSelect={setSelectedId}
+              onHover={setHoveredId}
+            />
+          </div>
+
           {/* Left surveillance panel */}
-          <div className="absolute bottom-4 left-4 top-[8.75rem] z-20">
+          <div className="lg:absolute lg:bottom-4 lg:left-4 lg:top-[8.75rem] lg:z-20">
             <SurveillancePanel
               blocks={blocks}
               time={time}
@@ -183,7 +194,7 @@ export default function App() {
           </div>
 
           {/* Right resource panel */}
-          <div className="absolute bottom-4 right-4 top-[8.75rem] z-20">
+          <div className="lg:absolute lg:bottom-4 lg:right-4 lg:top-[8.75rem] lg:z-20">
             <ResourcePanel
               blocks={blocks}
               time={time}
@@ -195,20 +206,10 @@ export default function App() {
               onHover={setHoveredId}
             />
           </div>
-
-          {/* Floating map legend + compass */}
-          <div className="absolute left-1/2 top-[9.25rem] z-20 -translate-x-1/2">
-            <MapLegend str={str} agg={agg} />
-          </div>
-
-          {/* Bottom reporting-window filter */}
-          <div className="absolute bottom-5 left-1/2 z-20 -translate-x-1/2">
-            <TimeFilter time={time} onTime={setTime} str={str} />
-          </div>
-        </>
+        </div>
       ) : (
         /* Boot gate while the API is loading / unreachable */
-        <div className="absolute inset-x-0 bottom-0 top-[8.75rem] z-20 grid place-items-center">
+        <div className="grid flex-1 place-items-center p-6 lg:absolute lg:inset-x-0 lg:bottom-0 lg:top-[8.75rem] lg:z-20">
           <BootStatus status={status} error={error} onRetry={reload} />
         </div>
       )}

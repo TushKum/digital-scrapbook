@@ -38,7 +38,7 @@ export default function SurveillancePanel({
   onHover,
 }: Props) {
   return (
-    <section className="gov-panel flex h-full w-[21rem] flex-col overflow-hidden">
+    <section className="gov-panel flex h-full w-full flex-col overflow-hidden lg:w-[21rem]">
       <div className="flex items-center gap-2 border-b border-gray-200 px-3.5 py-2.5">
         <span className="grid h-7 w-7 place-items-center rounded bg-navy-tint text-navy">
           <ClipboardList className="h-4 w-4" />

@@ -15,7 +15,7 @@
   "routes": [
     { "src": "^/api(/.*)?$", "dest": "/api/index.js" },
     { "handle": "filesystem" },
-    { "src": "^/(asha|advisory|glass-login)/?$", "dest": "/index.html" },
+    { "src": "^/(asha|advisory|glass-login|integration)/?$", "dest": "/index.html" },
     { "src": "^/verticals/milk-screening/?$", "dest": "/index.html" },
     { "src": "^/(.*)$", "status": 404, "dest": "/index.html" }
   ]

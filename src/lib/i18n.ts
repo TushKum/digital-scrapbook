@@ -59,6 +59,25 @@ export interface Strings {
   lastUpdated: string;
   selectHint: string;
   mapCaption: string;
+
+  // Priority response board (replaces the 3D scene).
+  boardTitle: string;
+  boardSub: string;
+  boardRank: string;
+  driverLabel: string;
+  driverWater: string;
+  driverCases: string;
+  driverBoth: string;
+  driverNone: string;
+  perLakh: string;
+  caseRate: string;
+  lowestStock: string;
+  recommended: string;
+  actChlorinate: string;
+  actTeam: string;
+  actRestock: string;
+  actMonitor: string;
+  rateFootnote: string;
 }
 
 export const STRINGS: Record<Lang, Strings> = {
@@ -117,6 +136,25 @@ export const STRINGS: Record<Lang, Strings> = {
     lastUpdated: 'Last synced',
     selectHint: 'Select a block on the map',
     mapCaption: 'Block-level Disease & Water Quality Surveillance',
+
+    boardTitle: 'Priority Response Board',
+    boardSub: 'Ranked by status, then case rate',
+    boardRank: 'Rank',
+    driverLabel: 'Driven by',
+    driverWater: 'Water quality',
+    driverCases: 'Caseload',
+    driverBoth: 'Water quality + caseload',
+    driverNone: 'Within thresholds',
+    perLakh: 'per 100,000',
+    caseRate: 'Case rate',
+    lowestStock: 'Lowest stock',
+    recommended: 'Recommended',
+    actChlorinate: 'Chlorinate source',
+    actTeam: 'Deploy response team',
+    actRestock: 'Restock PHC',
+    actMonitor: 'Routine monitoring',
+    rateFootnote:
+      'Case rate is shown per 100,000 for comparison. Status classification still uses absolute case counts.',
   },
   PA: {
     govtLine: 'ਪੰਜਾਬ ਸਰਕਾਰ · ਸਿਹਤ ਅਤੇ ਪਰਿਵਾਰ ਭਲਾਈ ਵਿਭਾਗ',
@@ -173,5 +211,24 @@ export const STRINGS: Record<Lang, Strings> = {
     lastUpdated: 'ਆਖਰੀ ਸਿੰਕ',
     selectHint: 'ਨਕਸ਼ੇ ਉੱਤੇ ਇੱਕ ਬਲਾਕ ਚੁਣੋ',
     mapCaption: 'ਬਲਾਕ-ਪੱਧਰੀ ਬਿਮਾਰੀ ਅਤੇ ਪਾਣੀ ਗੁਣਵੱਤਾ ਨਿਗਰਾਨੀ',
+
+    boardTitle: 'ਤਰਜੀਹੀ ਕਾਰਵਾਈ ਬੋਰਡ',
+    boardSub: 'ਸਥਿਤੀ ਅਤੇ ਕੇਸ ਦਰ ਅਨੁਸਾਰ ਕ੍ਰਮਬੱਧ',
+    boardRank: 'ਦਰਜਾ',
+    driverLabel: 'ਕਾਰਨ',
+    driverWater: 'ਪਾਣੀ ਦੀ ਗੁਣਵੱਤਾ',
+    driverCases: 'ਕੇਸਾਂ ਦੀ ਗਿਣਤੀ',
+    driverBoth: 'ਪਾਣੀ ਅਤੇ ਕੇਸ ਦੋਵੇਂ',
+    driverNone: 'ਸੀਮਾ ਦੇ ਅੰਦਰ',
+    perLakh: 'ਪ੍ਰਤੀ 1,00,000',
+    caseRate: 'ਕੇਸ ਦਰ',
+    lowestStock: 'ਸਭ ਤੋਂ ਘੱਟ ਸਟਾਕ',
+    recommended: 'ਸਿਫ਼ਾਰਸ਼',
+    actChlorinate: 'ਸਰੋਤ ਦਾ ਕਲੋਰੀਨੇਸ਼ਨ',
+    actTeam: 'ਰਿਸਪਾਂਸ ਟੀਮ ਭੇਜੋ',
+    actRestock: 'ਪੀਐਚਸੀ ਸਟਾਕ ਭਰੋ',
+    actMonitor: 'ਨਿਯਮਿਤ ਨਿਗਰਾਨੀ',
+    rateFootnote:
+      'ਤੁਲਨਾ ਲਈ ਕੇਸ ਦਰ ਪ੍ਰਤੀ 1,00,000 ਦਿਖਾਈ ਗਈ ਹੈ। ਸਥਿਤੀ ਦਾ ਵਰਗੀਕਰਨ ਹਾਲੇ ਵੀ ਕੁੱਲ ਕੇਸਾਂ ਦੀ ਗਿਣਤੀ ਵਰਤਦਾ ਹੈ।',
   },
 };

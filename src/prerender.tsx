@@ -6,10 +6,12 @@ import { renderToString } from 'react-dom/server';
 import type { ReactElement } from 'react';
 import MilkScreeningPage from './components/verticals/MilkScreeningPage';
 import GlassLoginPage from './components/GlassLoginPage';
+import IntegrationPage from './components/IntegrationPage';
 
 const ROUTES: Record<string, () => ReactElement> = {
   '/verticals/milk-screening': () => <MilkScreeningPage />,
   '/glass-login': () => <GlassLoginPage />,
+  '/integration': () => <IntegrationPage />,
 };
 
 export const PRERENDER_ROUTES = Object.keys(ROUTES);

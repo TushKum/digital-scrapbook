@@ -23,12 +23,12 @@ export default function TopUtilityBar({
   onLang,
 }: Props) {
   return (
-    <div className="flex h-8 items-center justify-between bg-navy-dark px-4 text-white">
-      <p className="truncate text-[11px] font-medium tracking-wide text-white/85">
+    <div className="flex h-8 items-center justify-between gap-2 bg-navy-dark px-3 text-white sm:px-4">
+      <p className="hidden truncate text-[11px] font-medium tracking-wide text-white/85 sm:block">
         {str.govtLine}
       </p>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Text size A- A A+ */}
         <div className="flex items-center gap-1" aria-label={str.textSize}>
           <span className="mr-1 hidden text-[10px] uppercase tracking-wide text-white/60 sm:inline">
@@ -77,7 +77,7 @@ export default function TopUtilityBar({
               key={l}
               onClick={() => onLang(l)}
               aria-pressed={lang === l}
-              className={`gov-focus rounded px-1.5 py-0.5 text-[11px] font-semibold ${
+              className={`gov-focus rounded px-2 py-1 text-[11px] font-semibold ${
                 lang === l ? 'bg-white text-navy' : 'text-white/80 hover:bg-white/15'
               }`}
             >

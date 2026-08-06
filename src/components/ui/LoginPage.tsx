@@ -1,4 +1,4 @@
-import { ArrowRight, Droplets, Key, LayoutDashboard, Milk, ShieldCheck, User } from 'lucide-react';
+import { ArrowRight, Droplets, Key, LayoutDashboard, Milk, Network, ShieldCheck, User } from 'lucide-react';
 import { useState } from 'react';
 import type { Strings } from '../../lib/i18n';
 import { CpuArchitecture } from './cpu-architecture';
@@ -122,6 +122,16 @@ export default function LoginPage({ str, error, loading = false, onSignIn }: Pro
             <span className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4 text-navy" aria-hidden="true" />
               ASHA Field Dashboard
+            </span>
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+          <a
+            href="/integration"
+            className="gov-focus flex items-center justify-between rounded-lg border border-gray-200 bg-panel px-3 py-2.5 text-sm font-semibold text-navy transition-colors hover:border-navy/30 hover:bg-navy-tint"
+          >
+            <span className="flex items-center gap-2">
+              <Network className="h-4 w-4 text-navy" aria-hidden="true" />
+              Data Sources &amp; Integration
             </span>
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </a>
