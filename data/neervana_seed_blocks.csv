@@ -1,0 +1,19 @@
+provenance,block_id,block_name_en,block_name_pa,phc,population,time_window,active_cases,new_cases,recovered,s_forms,p_forms,wqi_0_100,turbidity_ntu,stock_ors_pct,stock_zinc_pct,stock_antibiotics_pct
+synthetic-demo,sanaur,Sanaur,ਸਨੌਰ,CHC Sanaur,38420,24h,24,13,28,40,20,45,11.8,49,45,58
+synthetic-demo,sanaur,Sanaur,ਸਨੌਰ,CHC Sanaur,38420,7d,85,40,131,172,87,42,12.6,41,37,50
+synthetic-demo,sanaur,Sanaur,ਸਨੌਰ,CHC Sanaur,38420,epi22,142,60,220,307,155,38,14.2,32,28,41
+synthetic-demo,samana,Samana,ਸਮਾਣਾ,SDH Samana,51230,24h,16,9,19,28,14,54,7.4,65,69,77
+synthetic-demo,samana,Samana,ਸਮਾਣਾ,SDH Samana,51230,7d,58,27,88,120,60,51,8.2,57,61,69
+synthetic-demo,samana,Samana,ਸਮਾਣਾ,SDH Samana,51230,epi22,96,40,149,214,107,47,9.8,48,52,60
+synthetic-demo,patran,Patran,ਪਾਤੜਾਂ,CHC Patran,33760,24h,12,6,14,20,11,58,5.7,71,66,79
+synthetic-demo,patran,Patran,ਪਾਤੜਾਂ,CHC Patran,33760,7d,43,20,65,88,45,55,6.5,63,58,71
+synthetic-demo,patran,Patran,ਪਾਤੜਾਂ,CHC Patran,33760,epi22,71,30,110,157,81,51,8.1,54,49,62
+synthetic-demo,rajpura,Rajpura,ਰਾਜਪੁਰਾ,SDH Rajpura,88210,24h,11,6,13,20,9,65,4,83,88,75
+synthetic-demo,rajpura,Rajpura,ਰਾਜਪੁਰਾ,SDH Rajpura,88210,7d,38,18,59,87,41,62,4.8,75,80,67
+synthetic-demo,rajpura,Rajpura,ਰਾਜਪੁਰਾ,SDH Rajpura,88210,epi22,64,27,99,155,73,58,6.4,66,71,58
+synthetic-demo,nabha,Nabha,ਨਾਭਾ,Civil Hospital Nabha,67800,24h,6,3,8,12,6,79,0.7,99,95,91
+synthetic-demo,nabha,Nabha,ਨਾਭਾ,Civil Hospital Nabha,67800,7d,23,11,35,54,26,76,1.5,91,87,83
+synthetic-demo,nabha,Nabha,ਨਾਭਾ,Civil Hospital Nabha,67800,epi22,38,16,59,96,46,72,3.1,82,78,74
+synthetic-demo,ghanaur,Ghanaur,ਘਨੌਰ,PHC Ghanaur,28900,24h,4,2,4,7,4,85,0.4,100,100,100
+synthetic-demo,ghanaur,Ghanaur,ਘਨੌਰ,PHC Ghanaur,28900,7d,13,6,20,30,16,82,0.8,97,93,99
+synthetic-demo,ghanaur,Ghanaur,ਘਨੌਰ,PHC Ghanaur,28900,epi22,22,9,34,53,29,78,2.4,88,84,90
