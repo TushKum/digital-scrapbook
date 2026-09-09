@@ -1,0 +1,174 @@
+{
+  "data_sources": [
+    {
+      "key": "idsp",
+      "name": "IDSP / IHIP",
+      "category": "disease",
+      "accessMethod": "pdf",
+      "status": "pending-mou",
+      "notes": "Aggregate weekly PDFs public; block line-list needs MoU/RTI"
+    },
+    {
+      "key": "wqmis",
+      "name": "WQMIS / JJM",
+      "category": "water-microbial",
+      "accessMethod": "portal-gated",
+      "status": "pending-mou",
+      "notes": "Turbidity/residual chlorine/FTK; portal login-gated"
+    },
+    {
+      "key": "cgwb",
+      "name": "CGWB / India-WRIS",
+      "category": "water-chemical",
+      "accessMethod": "public-api",
+      "status": "available",
+      "notes": "Nitrate/fluoride/uranium; public reports"
+    },
+    {
+      "key": "imd",
+      "name": "IMD / NASA POWER",
+      "category": "rainfall",
+      "accessMethod": "public-api",
+      "status": "available",
+      "notes": "Daily precip; NASA POWER pulled Apr-Sep 2025"
+    },
+    {
+      "key": "sensor",
+      "name": "Field IoT sensors",
+      "category": "sensor",
+      "accessMethod": "device",
+      "status": "simulated",
+      "notes": "pH/ORP/temp/level; hardware not deployed"
+    },
+    {
+      "key": "rti",
+      "name": "RTI requests",
+      "category": "manual",
+      "accessMethod": "rti",
+      "status": "manual",
+      "notes": "Granular line-lists / dated samples on request"
+    }
+  ],
+  "disease_reports": [
+    {
+      "source": "news",
+      "disease": "acute diarrhoeal disease",
+      "village": "Alipur Arian, Patiala city",
+      "blockId": null,
+      "onsetDate": "2025-06-28",
+      "reportDate": "2025-07-11",
+      "cases": 131,
+      "deaths": 4,
+      "status": "confirmed",
+      "provenance": "real",
+      "sourceUrl": "https://www.tribuneindia.com/news/patiala/patiala-diarrhoea-outbreak-worsens-cases-climb-to-131"
+    },
+    {
+      "source": "news",
+      "disease": "acute diarrhoeal disease",
+      "village": "Changera (near Banur)",
+      "blockId": null,
+      "onsetDate": "2025-07-01",
+      "reportDate": "2025-07-15",
+      "cases": 0,
+      "deaths": 1,
+      "status": "confirmed",
+      "provenance": "real",
+      "sourceUrl": "https://www.tribuneindia.com/news/patiala/patiala-grapples-with-diarrhoea-outbreaks"
+    },
+    {
+      "source": "news",
+      "disease": "acute diarrhoeal disease",
+      "village": "New Mohindra Colony, Patiala city",
+      "blockId": null,
+      "onsetDate": "2022-08-01",
+      "reportDate": "2022-08-06",
+      "cases": 110,
+      "deaths": 2,
+      "status": "closed",
+      "provenance": "real",
+      "sourceUrl": "https://www.tribuneindia.com/news/patiala/two-kids-die-65-fall-sick-in-patiala-diarrhoea-suspected-419483"
+    }
+  ],
+  "water_samples": [
+    {
+      "source": "dwss",
+      "stationName": "Alipur Arian supply",
+      "blockId": null,
+      "collectedAt": "2025-07-09",
+      "turbidityNtu": null,
+      "residualChlorine": null,
+      "coliformPresent": true,
+      "nitrateMgL": null,
+      "fluorideMgL": null,
+      "uraniumPpb": null,
+      "result": "fail",
+      "provenance": "real"
+    },
+    {
+      "source": "cgwb",
+      "stationName": "Patiala district (CGWB max recorded)",
+      "blockId": null,
+      "collectedAt": "2024-01-01",
+      "turbidityNtu": null,
+      "residualChlorine": null,
+      "coliformPresent": null,
+      "nitrateMgL": 2553.0,
+      "fluorideMgL": 9.2,
+      "uraniumPpb": null,
+      "result": null,
+      "provenance": "real-reference"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "alert-demo-sanaur-2025w26",
+      "blockId": "sanaur",
+      "level": "critical",
+      "driver": "sensor-orp",
+      "riskScore": 92,
+      "status": "closed",
+      "raisedAt": "2025-06-27T09:00:00",
+      "closedAt": "2025-07-01T12:00:00",
+      "provenance": "rule-based"
+    }
+  ],
+  "response_events": [
+    {
+      "alertId": "alert-demo-sanaur-2025w26",
+      "action": "acknowledge",
+      "actor": "ANM (Sanaur sub-centre)",
+      "note": "ORP collapse <300mV flagged",
+      "at": "2025-06-27T10:30:00"
+    },
+    {
+      "alertId": "alert-demo-sanaur-2025w26",
+      "action": "assign",
+      "actor": "PHC MO Sanaur",
+      "note": "RRT tasked; samples ordered",
+      "at": "2025-06-27T14:00:00"
+    },
+    {
+      "alertId": "alert-demo-sanaur-2025w26",
+      "action": "act",
+      "actor": "Rapid Response Team",
+      "note": "Sewage cross-connection cut; chlorination",
+      "at": "2025-06-28T11:00:00"
+    },
+    {
+      "alertId": "alert-demo-sanaur-2025w26",
+      "action": "verify",
+      "actor": "District Public Health Lab",
+      "note": "Re-test: ORP recovering >600mV",
+      "at": "2025-07-01T09:00:00"
+    },
+    {
+      "alertId": "alert-demo-sanaur-2025w26",
+      "action": "close",
+      "actor": "District Nodal Officer",
+      "note": "Cleared; monitoring continues",
+      "at": "2025-07-01T12:00:00"
+    }
+  ],
+  "_provenance_note": "data_sources=factual registry; disease_reports+rainfall+water_samples(row1)=real (sourced); water_samples(row2)=real published maxima (reference, not one dated sample); alerts+response_events=rule-based/synthetic-demo illustration."
+}

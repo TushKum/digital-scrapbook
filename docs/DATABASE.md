@@ -120,11 +120,14 @@ erDiagram
 
 ## Tables (12)
 
-> **Honesty banner:** only 6 tables are populated today — 5 with the labelled
-> **synthetic-demo** seed (`blocks`, `snapshots`, `stock`, `dispatches`, `users`)
-> and `sensor_readings` with the **synthetic-simulated** stream. The other 6 are
-> the **data model for planned feeds/features** and are **empty** until real data
-> or the feature lands (see `DATASET.md` DATA GAPS and `DATA_ARCHITECTURE.md`).
+> **Honesty banner:** all 12 tables now have seed fixtures, but **provenance is
+> mixed and labelled per row** — never present it uniformly as measured govt data:
+> `blocks/snapshots/stock/dispatches/users` = **synthetic-demo**; `sensor_readings`
+> = **synthetic-simulated**; `rainfall_observations` + `disease_reports` = **real**
+> (NASA POWER / Tribune-sourced); `water_samples` = 1 real + 1 CGWB reference;
+> `data_sources` = factual registry; `alerts` + `response_events` = **rule-based
+> demo**. Fixtures live in `data/seed/` (see below). The remaining granular feeds
+> are still DATA GAPs (`DATASET.md` §3).
 
 | Table (`@@map`) | Purpose | Holds today |
 |---|---|---|
@@ -134,12 +137,12 @@ erDiagram
 | `dispatches` | Bilingual ticker messages | ✅ synthetic-demo |
 | `users` | Dashboard operators (JWT) | ✅ seeded (`nodal.officer`) |
 | `sensor_readings` | Field sensor time-series (pH/ORP/temp/level) per node | ✅ synthetic-simulated (CSV) |
-| `rainfall_observations` | Weekly/daily rainfall (NASA POWER / IMD) | ⚪ real data **available**, not yet loaded |
-| `disease_reports` | IDSP/IHIP/RTI case line-list | ⚪ **empty** — pending feed/RTI |
-| `water_samples` | WQMIS/DWSS/FTK/CGWB samples w/ collection date | ⚪ **empty** — pending feed/RTI |
-| `alerts` | Rule-based risk alerts | ⚪ **empty** — feature pending |
-| `response_events` | Alert→ack→assign→act→verify→close audit chain | ⚪ **empty** — feature pending |
-| `data_sources` | Integration source registry + status | ⚪ **empty** — mirrors `DATA_ARCHITECTURE.md` |
+| `rainfall_observations` | Weekly/daily rainfall (NASA POWER / IMD) | ✅ **real** — 27 wk NASA POWER (seed) |
+| `disease_reports` | IDSP/IHIP/RTI case line-list | ✅ **real** — 3 Tribune-sourced events (seed) |
+| `water_samples` | WQMIS/DWSS/FTK/CGWB samples w/ collection date | 🟡 seed: 1 real fail + 1 CGWB reference; rest = gap |
+| `alerts` | Rule-based risk alerts | 🟡 demo: 1 rule-based alert (seed) |
+| `response_events` | Alert→ack→assign→act→verify→close audit chain | 🟡 demo: 5-step chain (seed) |
+| `data_sources` | Integration source registry + status | ✅ registry — 6 rows (seed) |
 
 `window` ∈ `{ '24h', '7d', 'epi22' }` (rolling 24 h, 7 days, Epi-Week 22).
 
@@ -160,10 +163,19 @@ Production DB + `JWT_SECRET` live in Vercel env vars (pooled connection). The
 Express app is bundled to `api/index.js` for the Vercel function — see
 [`HANDOFF.md`](../HANDOFF.md).
 
-## Roadmap
-The feed tables (`disease_reports`, `water_samples`, `rainfall_observations`,
-`data_sources`) and the response-workflow tables (`alerts`, `response_events`)
-are now **defined in the schema but not yet migrated to the live DB, populated,
-or wired to the UI** — the data model is ready; ingestion + features are the
-build. See [`docs/DATA_ARCHITECTURE.md`](DATA_ARCHITECTURE.md) for per-source
-integration status.
+## Seed data
+Repo fixtures (provenance-labelled per row):
+- `data/seed/reference_data.json` — data_sources (6), disease_reports (3, real),
+  water_samples (2), alerts (1) + response_events (5, demo).
+- `data/seed/rainfall_observations.csv` — 27 real weekly rows (NASA POWER).
+- `data/neervana_sensor_simulated.csv` — 2,016 simulated sensor rows.
+
+Load into a database (after `prisma migrate deploy` + `prisma generate`):
+```bash
+tsx server/src/db/seedExtended.ts
+```
+
+> The **live Neon DB is not yet migrated** to these 12 tables, and no UI reads
+> the six new tables yet — the data model + fixtures are ready; the migration,
+> ingestion and features are the remaining build. See
+> [`docs/DATA_ARCHITECTURE.md`](DATA_ARCHITECTURE.md) for per-source status.
