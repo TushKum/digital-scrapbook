@@ -19,6 +19,7 @@ _Last updated: 2026-08-14._
 |---|---|---|---|
 | 6-block surveillance table (cases, WQI, turbidity, stock) | ✅ yes — powers the dashboard | ❌ **synthetic** — authored, formula-generated | `server/src/domain/seedData.ts` → Postgres → `/api/blocks` |
 | 12 ticker dispatches (EN + PA) | ✅ yes | ❌ authored | same |
+| Simulated IoT sensor stream (pH/ORP/temp/level) | ❌ not wired in | ❌ **synthetic-simulated** (pipeline dev) | `data/neervana_sensor_simulated.csv` |
 | Rainfall, Patiala, Apr–Sep 2025 (weekly) | ❌ not wired in | ✅ **real** | NASA POWER API (see below) |
 | July 2025 Alipur Arian outbreak facts | ❌ not wired in | ✅ **real** | Tribune India (see below) |
 | WQMIS turbidity / residual chlorine / FTK | ❌ | ⚠️ **DATA GAP** | RTI / JJM portal |
@@ -107,3 +108,51 @@ Source: **NASA POWER** `PRECTOTCORR` daily, point 30.34 N / 76.39 E, retrieved
 Until at least #1–#4 land across **2–3 outbreaks**, there is no dataset to train
 or validate a predictive model on — only a transparent, rule-based index is
 honest. See the conversation notes / `HANDOFF.md`.
+
+---
+
+## 4. Simulated hardware sensor stream (for pipeline development)
+
+**File:** [`data/neervana_sensor_simulated.csv`](data/neervana_sensor_simulated.csv)
+— 2,016 rows: **6 nodes × 336 hours** (hourly, 22 Jun–5 Jul 2025). Every row is
+tagged `provenance = synthetic-simulated`.
+
+> **This is a SIMULATOR, not measurements.** No NEERVANA hardware exists yet.
+> These are physically-plausible values a deployed sensor node *would* emit, so
+> the ingestion pipeline, alerting rules, and dashboard can be built and demoed
+> before hardware arrives. **Never present these as real readings.**
+
+**Sensor → column mapping (what each component measures):**
+| Component | Column | Unit | Safe band (BIS/WHO drinking-water) |
+|---|---|---|---|
+| pH probe | `ph` | 0–14 | 6.5 – 8.5 |
+| **ORP probe** | `orp_mv` | mV | **≥ 650 = disinfected**; 400–649 watch; < 400 critical |
+| Temperature | `water_temp_c` | °C | informational (diurnal + seasonal) |
+| **Ultrasonic** | `water_level_cm` | cm | tank/reservoir level (operational, not quality) |
+
+**Why ORP is the point.** ORP measures oxidising (disinfection) capacity. A sewage
+cross-connection — the actual cause of the July 2025 Alipur Arian deaths — **destroys
+ORP** as organic load consumes the chlorine residual. Rainfall could *not* have flagged
+that event (see §2); a source-side ORP probe **could**. That is the honest hardware value
+proposition, and it is what this simulator demonstrates.
+
+**Embedded scenario (honest demo, not a claim):** the `SNSR-SANAUR-01` node runs a
+simulated contamination event — ORP collapses from ~600 mV to a floor of ~185 mV and
+pH dips to ~6.3 — ramping up from Jun 27 06:00, i.e. **~24 h before the real Jun 28
+onset**, then recovering after a simulated chlorination response by Jul 1. The other five
+nodes stay in normal bands (baselines scaled to each block's WQI). ~1.5% of rows are
+`sensor_health = dropout` (empty values) to mimic real hardware gaps.
+
+**Reproduce:** deterministic, `random.seed(42)`; generator is in this repo's commit
+history (search the session log). Node baselines are derived from the block WQI profiles
+in §1, so the simulator is internally consistent with the demo dataset.
+
+### CSV column dictionary — `neervana_sensor_simulated.csv`
+| Column | Meaning |
+|---|---|
+| `timestamp_ist` | ISO hour, IST |
+| `provenance` | always `synthetic-simulated` |
+| `node_id`, `block_id`, `block_name` | sensor node ↔ block link |
+| `ph`, `orp_mv`, `water_temp_c`, `water_level_cm` | sensor readings (empty on dropout) |
+| `orp_status` | derived band: `safe` ≥650 / `watch` 400–649 / `critical` <400 |
+| `sensor_health` | `ok` or `dropout` |
