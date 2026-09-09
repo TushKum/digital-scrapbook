@@ -26,6 +26,7 @@ interface Props {
   hoveredId: string | null;
   onSelect: (id: string | null) => void;
   onHover: (id: string | null) => void;
+  officerName?: string;
 }
 
 const RANK: Record<Status, number> = { safe: 0, warning: 1, critical: 2 };
@@ -102,6 +103,7 @@ export default function ResponseBoard({
   hoveredId,
   onSelect,
   onHover,
+  officerName,
 }: Props) {
   const rows = buildRows(blocks, time);
   if (!rows.length) return null;
@@ -201,7 +203,7 @@ export default function ResponseBoard({
 
         {/* Alert accountability chain + rainfall context for the critical lead block. */}
         <div className="mt-3 space-y-3">
-          <AlertChain lang={lang} />
+          <AlertChain lang={lang} officerName={officerName} />
           <RainfallTrend lang={lang} />
         </div>
 

@@ -19,6 +19,7 @@ import VillagerAdvisory from './components/dashboards/VillagerAdvisory';
 import AshaDashboard from './components/dashboards/AshaDashboard';
 import GlassLoginPage from './components/GlassLoginPage';
 import IntegrationPage from './components/IntegrationPage';
+import CommandCenter from './components/CommandCenter';
 import NotFound from './components/ui/NotFound';
 
 const FONT_PX = [14, 16, 18];
@@ -31,6 +32,7 @@ const PUBLIC_ROUTES: Record<string, () => React.JSX.Element> = {
   '/advisory': () => <VillagerAdvisory />,
   '/glass-login': () => <GlassLoginPage />,
   '/integration': () => <IntegrationPage />,
+  '/command-center': () => <CommandCenter />,
 };
 
 // Authenticated routes (rendered only once signed in).
@@ -175,6 +177,7 @@ export default function App() {
               hoveredId={hoveredId}
               onSelect={setSelectedId}
               onHover={setHoveredId}
+              officerName={auth.user?.displayName}
             />
           </div>
 
