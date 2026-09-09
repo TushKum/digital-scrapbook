@@ -1,4 +1,6 @@
 import { AlertTriangle, Droplets, Activity, PackageCheck, ArrowRight } from 'lucide-react';
+import AlertChain from './AlertChain';
+import RainfallTrend from './RainfallTrend';
 import type { Block, TimeKey } from '../../data/blocks';
 import type { Lang, Strings } from '../../lib/i18n';
 import {
@@ -196,6 +198,12 @@ export default function ResponseBoard({
             ))}
           </div>
         </button>
+
+        {/* Alert accountability chain + rainfall context for the critical lead block. */}
+        <div className="mt-3 space-y-3">
+          <AlertChain lang={lang} />
+          <RainfallTrend lang={lang} />
+        </div>
 
         {/* Everything else, same ordering. */}
         <ul className="mt-3 space-y-1.5">
