@@ -12,20 +12,25 @@ datasource db {
 
 /// A revenue/administrative block in Patiala district.
 model Block {
-  id         String     @id
-  name       String
-  namePa     String
-  phc        String
-  population Int
-  posX       Float
-  posZ       Float
-  areaW      Float
-  areaD      Float
-  sortOrder  Int        @default(0)
-  snapshots  Snapshot[]
-  stock      Stock[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id             String                @id
+  name           String
+  namePa         String
+  phc            String
+  population     Int
+  posX           Float
+  posZ           Float
+  areaW          Float
+  areaD          Float
+  sortOrder      Int                   @default(0)
+  snapshots      Snapshot[]
+  stock          Stock[]
+  readings       SensorReading[]
+  diseaseReports DiseaseReport[]
+  waterSamples   WaterSample[]
+  rainfall       RainfallObservation[]
+  alerts         Alert[]
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
 
   @@map("blocks")
 }
@@ -66,15 +71,40 @@ model Stock {
 
 /// A dashboard operator (e.g. District Nodal Officer).
 model User {
-  id           String   @id @default(cuid())
-  username     String   @unique
+  id           String    @id @default(cuid())
+  username     String    @unique
   passwordHash String
   displayName  String
-  role         String   @default("officer")
-  createdAt    DateTime @default(now())
+  role         String    @default("officer")
+  createdAt    DateTime  @default(now())
   lastLoginAt  DateTime?
 
   @@map("users")
+}
+
+/// Time-series reading from a field water-quality sensor node
+/// (pH / ORP / temperature / ultrasonic level). Kept in its OWN table, separate
+/// from the block Snapshot/Stock windows, because it is a high-frequency device
+/// feed. Currently holds the synthetic-simulated stream (no hardware deployed) —
+/// see data/neervana_sensor_simulated.csv and DATASET.md §4.
+model SensorReading {
+  id           String   @id @default(cuid())
+  nodeId       String // e.g. SNSR-SANAUR-01
+  block        Block?   @relation(fields: [blockId], references: [id], onDelete: SetNull)
+  blockId      String?
+  ts           DateTime // reading timestamp (IST)
+  ph           Float? // 0–14 (null on dropout)
+  orpMv        Int? // oxidation-reduction potential, mV
+  waterTempC   Float?
+  waterLevelCm Float? // ultrasonic level
+  orpStatus    String? // 'safe' | 'watch' | 'critical'
+  sensorHealth String   @default("ok") // 'ok' | 'dropout'
+  provenance   String   @default("synthetic-simulated")
+  createdAt    DateTime @default(now())
+
+  @@index([nodeId, ts])
+  @@index([blockId, ts])
+  @@map("sensor_readings")
 }
 
 /// Official dispatch surfaced by the public notification ticker.
@@ -88,4 +118,118 @@ model Dispatch {
 
   @@index([lang, active])
   @@map("dispatches")
+}
+
+/// Registry of upstream data sources and how far each is integrated.
+/// Mirrors docs/DATA_ARCHITECTURE.md. Honest status — no false "live" claims.
+model DataSource {
+  id           String    @id @default(cuid())
+  key          String    @unique // 'idsp' | 'wqmis' | 'cgwb' | 'imd' | 'sensor' | 'rti'
+  name         String
+  category     String // 'disease' | 'water-microbial' | 'water-chemical' | 'rainfall' | 'sensor' | 'manual'
+  accessMethod String // 'public-api' | 'portal-gated' | 'pdf' | 'rti' | 'device'
+  status       String    @default("planned") // connected|available|pending-mou|simulated|manual|planned
+  lastSyncAt   DateTime?
+  notes        String?
+  updatedAt    DateTime  @updatedAt
+
+  @@map("data_sources")
+}
+
+/// IDSP/IHIP-style outbreak / case report (line-list). Populated from official
+/// feeds or RTI once available; empty until then (see DATASET.md DATA GAPS).
+model DiseaseReport {
+  id         String    @id @default(cuid())
+  source     String    @default("idsp") // 'idsp' | 'ihip' | 'rti' | 'news'
+  disease    String // e.g. 'acute diarrhoeal disease'
+  village    String?
+  block      Block?    @relation(fields: [blockId], references: [id], onDelete: SetNull)
+  blockId    String?
+  onsetDate  DateTime?
+  reportDate DateTime?
+  cases      Int       @default(0)
+  deaths     Int       @default(0)
+  status     String    @default("suspected") // suspected|confirmed|closed
+  provenance String    @default("pending") // real|pending|synthetic-demo
+  sourceUrl  String?
+  createdAt  DateTime  @default(now())
+
+  @@index([blockId, onsetDate])
+  @@map("disease_reports")
+}
+
+/// Water-quality lab / FTK sample with a COLLECTION DATE (the field missing from
+/// public sources — see DATASET.md). Microbial + chemical columns in one row.
+model WaterSample {
+  id               String   @id @default(cuid())
+  source           String // 'wqmis' | 'dwss' | 'ftk' | 'cgwb'
+  block            Block?   @relation(fields: [blockId], references: [id], onDelete: SetNull)
+  blockId          String?
+  stationName      String?
+  collectedAt      DateTime
+  turbidityNtu     Float?
+  residualChlorine Float? // mg/L
+  coliformPresent  Boolean?
+  nitrateMgL       Float?
+  fluorideMgL      Float?
+  uraniumPpb       Float?
+  result           String? // 'pass' | 'fail'
+  provenance       String   @default("pending")
+  createdAt        DateTime @default(now())
+
+  @@index([blockId, collectedAt])
+  @@map("water_samples")
+}
+
+/// Weekly/daily rainfall per block or point. Holds REAL data (NASA POWER / IMD).
+model RainfallObservation {
+  id            String    @id @default(cuid())
+  source        String    @default("nasa-power") // 'nasa-power' | 'imd' | 'chirps'
+  block         Block?    @relation(fields: [blockId], references: [id], onDelete: SetNull)
+  blockId       String?
+  lat           Float?
+  lon           Float?
+  isoWeek       String? // e.g. '2025-W26'
+  date          DateTime?
+  rainfallMm    Float
+  heavyRainDays Int       @default(0) // days >50mm in the week
+  provenance    String    @default("real")
+  createdAt     DateTime  @default(now())
+
+  @@index([blockId, isoWeek])
+  @@map("rainfall_observations")
+}
+
+/// A risk alert raised by the transparent rule-based index (not a black-box
+/// prediction). Root of the accountability workflow (ResponseEvent).
+model Alert {
+  id         String          @id @default(cuid())
+  block      Block           @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  blockId    String
+  level      String // 'watch' | 'advisory' | 'critical'
+  driver     String // 'water' | 'cases' | 'both' | 'sensor-orp'
+  riskScore  Int             @default(0)
+  status     String          @default("open") // open|acknowledged|assigned|acting|verifying|closed
+  raisedAt   DateTime        @default(now())
+  closedAt   DateTime?
+  provenance String          @default("rule-based")
+  events     ResponseEvent[]
+
+  @@index([blockId, status])
+  @@map("alerts")
+}
+
+/// One step in the alert -> acknowledge -> assign -> act -> verify -> close
+/// accountability chain. The audit trail a government reviewer asks for.
+model ResponseEvent {
+  id      String   @id @default(cuid())
+  alert   Alert    @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  alertId String
+  action  String // acknowledge|assign|act|verify|close|comment
+  actor   String // officer/role who acted
+  note    String?
+  at      DateTime @default(now())
+
+  @@index([alertId, at])
+  @@map("response_events")
 }
