@@ -101,6 +101,37 @@ export async function fetchMe(signal?: AbortSignal): Promise<AuthUser> {
   return r.user;
 }
 
+export interface ResponseEventDTO {
+  id: string;
+  action: string;
+  actor: string;
+  note: string | null;
+  at: string;
+}
+
+export interface AlertDTO {
+  id: string;
+  blockId: string;
+  level: string;
+  driver: string;
+  riskScore: number;
+  status: 'open' | 'acknowledged' | 'assigned' | 'acting' | 'verifying' | 'closed';
+  raisedAt: string;
+  closedAt: string | null;
+  provenance: string;
+  events: ResponseEventDTO[];
+}
+
+// Active alerts + their response chain (public read).
+export async function fetchAlerts(signal?: AbortSignal): Promise<AlertDTO[]> {
+  return request<AlertDTO[]>('/api/alerts', { signal });
+}
+
+// Advance an alert one step; the backend records the acting officer + timestamp.
+export async function advanceAlert(id: string, action: string, note?: string): Promise<AlertDTO> {
+  return request<AlertDTO>(`/api/alerts/${id}/advance`, { method: 'POST', body: { action, note } });
+}
+
 // ── surveillance data ─────────────────────────────────────────────────────
 export function fetchBlocks(signal?: AbortSignal): Promise<Block[]> {
   return request<Block[]>('/api/blocks', { signal });

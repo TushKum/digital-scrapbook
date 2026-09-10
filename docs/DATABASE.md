@@ -140,15 +140,19 @@ erDiagram
 | `rainfall_observations` | Weekly/daily rainfall (NASA POWER / IMD) | ✅ **real** — 27 wk NASA POWER (seed) |
 | `disease_reports` | IDSP/IHIP/RTI case line-list | ✅ **real** — 3 Tribune-sourced events (seed) |
 | `water_samples` | WQMIS/DWSS/FTK/CGWB samples w/ collection date | 🟡 seed: 1 real fail + 1 CGWB reference; rest = gap |
-| `alerts` | Rule-based risk alerts | 🟡 demo: 1 rule-based alert (seed) |
-| `response_events` | Alert→ack→assign→act→verify→close audit chain | 🟡 demo: 5-step chain (seed) |
+| `alerts` | Rule-based risk alerts | ✅ 1 alert seeded **open**; advanced live via API |
+| `response_events` | Alert→ack→assign→act→verify→close audit chain | ✅ **written live** by `POST /api/alerts/:id/advance` |
 | `data_sources` | Integration source registry + status | ✅ registry — 6 rows (seed) |
 
 `window` ∈ `{ '24h', '7d', 'epi22' }` (rolling 24 h, 7 days, Epi-Week 22).
 
-## API surface (read paths)
+## API surface
 - `GET /api/blocks` → blocks with nested `snapshots` + `stock` (public).
 - `GET /api/dispatches` → `{ EN: string[], PA: string[] }` (public).
+- `GET /api/alerts` → active alerts with their `events` response chain (public).
+- `POST /api/alerts/:id/advance` → `{ action, note? }`; appends a `response_event`
+  (actor = signed-in officer) and advances the alert status. **Auth required.**
+  Rejects out-of-order actions (409) and unauthenticated calls (401).
 - `POST /api/auth/login` → JWT (users table).
 - `GET /api/health` → liveness.
 
@@ -170,12 +174,20 @@ Repo fixtures (provenance-labelled per row):
 - `data/seed/rainfall_observations.csv` — 27 real weekly rows (NASA POWER).
 - `data/neervana_sensor_simulated.csv` — 2,016 simulated sensor rows.
 
-Load into a database (after `prisma migrate deploy` + `prisma generate`):
+Apply the schema + load fixtures (locally, or for production with a **rotated**
+`DATABASE_URL` / `DIRECT_URL`):
 ```bash
-tsx server/src/db/seedExtended.ts
+npx prisma migrate deploy               # applies migrations incl. 20260909_add_env_alerts_sensors (the 6 new tables)
+npx prisma generate
+npm run db:seed                         # base: blocks / snapshots / stock / dispatches / users
+npx tsx server/src/db/seedExtended.ts   # sources, disease, rainfall, sensors, + one OPEN alert
 ```
 
-> The **live Neon DB is not yet migrated** to these 12 tables, and no UI reads
-> the six new tables yet — the data model + fixtures are ready; the migration,
-> ingestion and features are the remaining build. See
-> [`docs/DATA_ARCHITECTURE.md`](DATA_ARCHITECTURE.md) for per-source status.
+> **Production status.** The alert accountability chain and rainfall are wired
+> into the dashboard and **persist to the database** via `POST /api/alerts/:id/advance`
+> whenever the API can reach the 12-table schema (verified end-to-end locally).
+> The **live Neon DB must still be migrated** (command above) before it persists
+> in prod; until then the alert chain falls back to a local demo automatically.
+> ⚠️ **Rotate the Neon password first** (it was exposed in chat) and update the
+> Vercel env, then run the migration. See
+> [`docs/DATA_ARCHITECTURE.md`](DATA_ARCHITECTURE.md).

@@ -127,48 +127,11 @@
       "level": "critical",
       "driver": "sensor-orp",
       "riskScore": 92,
-      "status": "closed",
+      "status": "open",
       "raisedAt": "2025-06-27T09:00:00",
-      "closedAt": "2025-07-01T12:00:00",
       "provenance": "rule-based"
     }
   ],
-  "response_events": [
-    {
-      "alertId": "alert-demo-sanaur-2025w26",
-      "action": "acknowledge",
-      "actor": "ANM (Sanaur sub-centre)",
-      "note": "ORP collapse <300mV flagged",
-      "at": "2025-06-27T10:30:00"
-    },
-    {
-      "alertId": "alert-demo-sanaur-2025w26",
-      "action": "assign",
-      "actor": "PHC MO Sanaur",
-      "note": "RRT tasked; samples ordered",
-      "at": "2025-06-27T14:00:00"
-    },
-    {
-      "alertId": "alert-demo-sanaur-2025w26",
-      "action": "act",
-      "actor": "Rapid Response Team",
-      "note": "Sewage cross-connection cut; chlorination",
-      "at": "2025-06-28T11:00:00"
-    },
-    {
-      "alertId": "alert-demo-sanaur-2025w26",
-      "action": "verify",
-      "actor": "District Public Health Lab",
-      "note": "Re-test: ORP recovering >600mV",
-      "at": "2025-07-01T09:00:00"
-    },
-    {
-      "alertId": "alert-demo-sanaur-2025w26",
-      "action": "close",
-      "actor": "District Nodal Officer",
-      "note": "Cleared; monitoring continues",
-      "at": "2025-07-01T12:00:00"
-    }
-  ],
-  "_provenance_note": "data_sources=factual registry; disease_reports+rainfall+water_samples(row1)=real (sourced); water_samples(row2)=real published maxima (reference, not one dated sample); alerts+response_events=rule-based/synthetic-demo illustration."
+  "response_events": [],
+  "_provenance_note": "data_sources=factual; disease_reports+rainfall+water_samples(row1)=real; water_samples(row2)=CGWB reference; alert seeded OPEN — response_events are written live by the API as an officer advances it."
 }

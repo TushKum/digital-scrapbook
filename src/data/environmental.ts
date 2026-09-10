@@ -70,6 +70,16 @@ export const PRIMARY_ALERT: PrimaryAlert = {
   ],
 };
 
+// Map a persisted alert status to the number of completed stages.
+export const STATUS_INDEX: Record<string, number> = {
+  open: 0,
+  acknowledged: 1,
+  assigned: 2,
+  acting: 3,
+  verifying: 4,
+  closed: 5,
+};
+
 export const STAGE_LABEL: Record<StageKey, Record<Lang, string>> = {
   acknowledge: { EN: 'Acknowledge', PA: 'ਪੁਸ਼ਟੀ' },
   assign: { EN: 'Assign', PA: 'ਸੌਂਪੋ' },

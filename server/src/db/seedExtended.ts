@@ -18,7 +18,7 @@ const j = (p: string) => JSON.parse(readFileSync(resolve(ROOT, p), 'utf8'));
 const num = (v: string) => (v === '' ? null : Number(v));
 
 function readCsv(path: string): Record<string, string>[] {
-  const lines = readFileSync(resolve(ROOT, path), 'utf8').trim().split('\n');
+  const lines = readFileSync(resolve(ROOT, path), 'utf8').trim().split(/\r?\n/);
   const cols = lines[0].split(',');
   return lines.slice(1).map((line) => {
     const cells = line.split(',');
@@ -74,11 +74,13 @@ async function main() {
     });
   }
   await prisma.responseEvent.deleteMany({ where: { alertId: { in: ref.alerts.map((a: { id: string }) => a.id) } } });
-  await prisma.responseEvent.createMany({
-    data: ref.response_events.map((e: { alertId: string; action: string; actor: string; note: string; at: string }) => ({
-      alertId: e.alertId, action: e.action, actor: e.actor, note: e.note, at: new Date(e.at),
-    })),
-  });
+  if (ref.response_events.length) {
+    await prisma.responseEvent.createMany({
+      data: ref.response_events.map((e: { alertId: string; action: string; actor: string; note: string; at: string }) => ({
+        alertId: e.alertId, action: e.action, actor: e.actor, note: e.note, at: new Date(e.at),
+      })),
+    });
+  }
 
   // 6. Simulated sensor stream (synthetic-simulated) — batched insert.
   const sensor = readCsv('data/neervana_sensor_simulated.csv');

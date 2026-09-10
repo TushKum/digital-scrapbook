@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authRoutes } from './authRoutes';
 import { blockRoutes } from './blockRoutes';
 import { dispatchRoutes } from './dispatchRoutes';
+import { alertRoutes } from './alertRoutes';
 import { healthController } from '../controllers/healthController';
 import { blockController } from '../controllers/blockController';
 import { asyncHandler } from '../middleware/asyncHandler';
@@ -22,3 +23,4 @@ apiRouter.get(
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/blocks', blockRoutes);
 apiRouter.use('/dispatches', dispatchRoutes);
+apiRouter.use('/alerts', alertRoutes);

@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { ArrowRight, Check, CircleDot, OctagonAlert, RotateCcw, ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowRight, Check, CircleDot, Loader2, OctagonAlert, RotateCcw, ShieldCheck } from 'lucide-react';
 import type { Lang } from '../../lib/i18n';
-import { PRIMARY_ALERT, STAGE_LABEL, STAGE_ORDER } from '../../data/environmental';
+import { PRIMARY_ALERT, STAGE_LABEL, STAGE_ORDER, STATUS_INDEX } from '../../data/environmental';
+import { advanceAlert, fetchAlerts, type AlertDTO } from '../../lib/api';
 
 interface Props {
   lang: Lang;
@@ -10,7 +11,6 @@ interface Props {
 
 const STORAGE_KEY = `neervana.alert.${PRIMARY_ALERT.blockId}-2025w26`;
 
-// status label indexed by number of completed stages (0 = open … 5 = closed)
 const STATUS_BY_DONE: Record<Lang, string>[] = [
   { EN: 'Open', PA: 'ਖੁੱਲ੍ਹਾ' },
   { EN: 'Acknowledged', PA: 'ਪੁਸ਼ਟੀ ਹੋਈ' },
@@ -22,10 +22,10 @@ const STATUS_BY_DONE: Record<Lang, string>[] = [
 
 interface Progress {
   done: number;
-  times: string[]; // ISO timestamp per completed stage
+  times: string[];
 }
 
-function load(): Progress {
+function loadLocal(): Progress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -33,12 +33,12 @@ function load(): Progress {
       if (typeof p.done === 'number' && Array.isArray(p.times)) return p;
     }
   } catch {
-    /* storage unavailable — start fresh */
+    /* storage unavailable */
   }
   return { done: 0, times: [] };
 }
 
-function save(p: Progress) {
+function saveLocal(p: Progress) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
   } catch {
@@ -56,32 +56,83 @@ function fmtTime(iso: string): string {
   });
 }
 
-// Interactive alert accountability chain. An officer advances the alert through
-// acknowledge -> assign -> act -> verify -> close; each step stamps the real time
-// (and signed-in officer) and persists to localStorage. Demo workflow — badge says so.
+// Alert accountability chain. Prefers the live API (persists each step to the
+// database, recording the signed-in officer); if the API/table isn't available
+// it falls back to a local (localStorage) demo so the dashboard never breaks.
 export default function AlertChain({ lang, officerName }: Props) {
-  const a = PRIMARY_ALERT;
-  const [progress, setProgress] = useState<Progress>(load);
-  const { done, times } = progress;
+  const meta = PRIMARY_ALERT;
+  const [mode, setMode] = useState<'loading' | 'live' | 'local'>('loading');
+  const [alert, setAlert] = useState<AlertDTO | null>(null);
+  const [local, setLocal] = useState<Progress>(loadLocal);
+  const [busy, setBusy] = useState(false);
 
-  const name = lang === 'PA' ? a.blockNamePa : a.blockName;
-  const driver = lang === 'PA' ? a.driverPa : a.driverEn;
+  useEffect(() => {
+    let active = true;
+    fetchAlerts()
+      .then((list) => {
+        if (!active) return;
+        if (list.length > 0) {
+          setAlert(list[0]);
+          setMode('live');
+        } else {
+          setMode('local');
+        }
+      })
+      .catch(() => {
+        if (active) setMode('local');
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const live = mode === 'live' && alert !== null;
+  const done = live ? STATUS_INDEX[alert!.status] ?? 0 : local.done;
   const closed = done >= STAGE_ORDER.length;
   const statusLabel = STATUS_BY_DONE[Math.min(done, STAGE_ORDER.length)][lang];
+  const name = lang === 'PA' ? meta.blockNamePa : meta.blockName;
+  const driver = lang === 'PA' ? meta.driverPa : meta.driverEn;
 
-  const advance = () => {
-    if (done >= STAGE_ORDER.length) return;
-    const next: Progress = { done: done + 1, times: [...times, new Date().toISOString()] };
-    setProgress(next);
-    save(next);
+  const advance = async () => {
+    if (done >= STAGE_ORDER.length || busy) return;
+    const stage = STAGE_ORDER[done];
+    if (live && alert) {
+      setBusy(true);
+      try {
+        const updated = await advanceAlert(alert.id, stage, meta.chain[done].note);
+        setAlert(updated);
+      } catch {
+        /* leave state unchanged on failure */
+      } finally {
+        setBusy(false);
+      }
+    } else {
+      const next: Progress = { done: local.done + 1, times: [...local.times, new Date().toISOString()] };
+      setLocal(next);
+      saveLocal(next);
+    }
   };
+
   const reset = () => {
     const cleared: Progress = { done: 0, times: [] };
-    setProgress(cleared);
-    save(cleared);
+    setLocal(cleared);
+    saveLocal(cleared);
   };
 
   const statusTone = closed ? '#138808' : done === 0 ? '#6b7280' : '#e07e1d';
+
+  // Per-stage completed info (actor + time + note) from the live event or local.
+  const stepInfo = (i: number) => {
+    if (live && alert && alert.events[i]) {
+      const e = alert.events[i];
+      return { time: e.at, actor: e.actor, note: e.note ?? (lang === 'PA' ? meta.chain[i].notePa : meta.chain[i].note) };
+    }
+    return {
+      time: local.times[i],
+      actor: officerName ?? (lang === 'PA' ? meta.chain[i].actorPa : meta.chain[i].actor),
+      note: lang === 'PA' ? meta.chain[i].notePa : meta.chain[i].note,
+    };
+  };
 
   return (
     <div className="gov-panel border-2 border-critical/40 bg-white p-3">
@@ -92,8 +143,20 @@ export default function AlertChain({ lang, officerName }: Props) {
             {lang === 'PA' ? 'ਅਲਰਟ ਤੇ ਕਾਰਵਾਈ' : 'Alert & response'}
           </span>
         </div>
-        <span className="rounded-full bg-navy-tint px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-navy">
-          {lang === 'PA' ? 'ਡੈਮੋ · ਇੰਟਰਐਕਟਿਵ' : 'DEMO · interactive'}
+        <span
+          className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide ${
+            live ? 'bg-india-greenTint text-india-green' : 'bg-navy-tint text-navy'
+          }`}
+        >
+          {mode === 'loading'
+            ? '…'
+            : live
+              ? lang === 'PA'
+                ? 'ਲਾਈਵ · ਡਾਟਾਬੇਸ'
+                : 'LIVE · saved to DB'
+              : lang === 'PA'
+                ? 'ਡੈਮੋ · ਲੋਕਲ'
+                : 'DEMO · local'}
         </span>
       </div>
 
@@ -118,8 +181,8 @@ export default function AlertChain({ lang, officerName }: Props) {
       <ol className="space-y-2.5">
         {STAGE_ORDER.map((stage, i) => {
           const isDone = i < done;
-          const isCurrent = i === done;
-          const step = a.chain[i];
+          const isCurrent = i === done && !closed;
+          const info = stepInfo(i);
           return (
             <li key={stage} className="flex gap-2.5">
               <span
@@ -135,28 +198,25 @@ export default function AlertChain({ lang, officerName }: Props) {
                   <span className={`text-[11px] font-bold ${isDone || isCurrent ? 'text-navy' : 'text-muted'}`}>
                     {STAGE_LABEL[stage][lang]}
                   </span>
-                  {isDone && <span className="text-[9px] tabular-nums text-muted">{fmtTime(times[i])}</span>}
+                  {isDone && info.time && <span className="text-[9px] tabular-nums text-muted">{fmtTime(info.time)}</span>}
                 </div>
                 <div className={`text-[10px] ${isDone || isCurrent ? 'font-medium text-ink' : 'text-muted'}`}>
-                  {lang === 'PA' ? step.actorPa : step.actor}
+                  {isDone ? info.actor : lang === 'PA' ? meta.chain[i].actorPa : meta.chain[i].actor}
                 </div>
                 {(isDone || isCurrent) && (
-                  <div className="text-[10px] text-muted">{lang === 'PA' ? step.notePa : step.note}</div>
-                )}
-                {isDone && officerName && (
-                  <div className="text-[9px] italic text-muted">
-                    {lang === 'PA' ? 'ਰਿਕਾਰਡ' : 'logged by'}: {officerName}
-                  </div>
+                  <div className="text-[10px] text-muted">{info.note}</div>
                 )}
 
                 {isCurrent && (
                   <button
                     type="button"
                     onClick={advance}
-                    className="gov-focus mt-1.5 inline-flex items-center gap-1.5 rounded-md bg-navy px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-navy-light"
+                    disabled={busy}
+                    className="gov-focus mt-1.5 inline-flex items-center gap-1.5 rounded-md bg-navy px-2.5 py-1 text-[11px] font-semibold text-white transition-colors hover:bg-navy-light disabled:opacity-60"
                   >
+                    {busy ? <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" /> : null}
                     {STAGE_LABEL[stage][lang]}
-                    <ArrowRight className="h-3 w-3" aria-hidden="true" />
+                    {!busy && <ArrowRight className="h-3 w-3" aria-hidden="true" />}
                   </button>
                 )}
               </div>
@@ -169,14 +229,20 @@ export default function AlertChain({ lang, officerName }: Props) {
         {closed ? (
           <span className="flex items-center gap-1.5 text-[10px] font-semibold text-india-green">
             <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            {lang === 'PA' ? 'ਬੰਦ ਕੀਤਾ' : 'Closed'} · {fmtTime(times[times.length - 1])}
+            {lang === 'PA' ? 'ਬੰਦ ਕੀਤਾ' : 'Closed'}
           </span>
         ) : (
           <span className="text-[10px] text-muted">
-            {lang === 'PA' ? 'ਅਗਲਾ ਕਦਮ ਦਬਾਓ' : 'Advance the alert through each step'}
+            {live
+              ? lang === 'PA'
+                ? 'ਹਰ ਕਦਮ ਡਾਟਾਬੇਸ ਵਿੱਚ ਸੰਭਾਲਿਆ ਜਾਂਦਾ ਹੈ'
+                : 'Each step is saved to the database'
+              : lang === 'PA'
+                ? 'ਅਲਰਟ ਨੂੰ ਹਰ ਕਦਮ ਰਾਹੀਂ ਅੱਗੇ ਵਧਾਓ'
+                : 'Advance the alert through each step'}
           </span>
         )}
-        {done > 0 && (
+        {!live && local.done > 0 && (
           <button
             type="button"
             onClick={reset}

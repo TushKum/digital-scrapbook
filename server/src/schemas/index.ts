@@ -51,7 +51,15 @@ export const addDispatchSchema = z.object({
   priority: z.coerce.number().int().min(0).max(100).default(0),
 });
 
+export const alertActionSchema = z.enum(['acknowledge', 'assign', 'act', 'verify', 'close']);
+
+export const advanceAlertSchema = z.object({
+  action: alertActionSchema,
+  note: z.string().trim().max(280).optional(),
+});
+
 export type SubmitReportInput = z.infer<typeof submitReportSchema>;
+export type AdvanceAlertInput = z.infer<typeof advanceAlertSchema>;
 export type UpdateStockInput = z.infer<typeof updateStockSchema>;
 export type AddDispatchInput = z.infer<typeof addDispatchSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
